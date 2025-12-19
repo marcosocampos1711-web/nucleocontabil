@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Núcleo Contabilidade - Administração de Condomínios</title>
     
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -18,420 +20,296 @@
             --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            scroll-behavior: smooth; /* Tela deslizante suave */
-        }
-
         body {
             font-family: 'Poppins', sans-serif;
             color: #333;
-            line-height: 1.6;
             overflow-x: hidden;
         }
 
-        /* Menu de Navegação */
-        header {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 2000;
-            padding: 25px 8%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        /* Menu de Navegação Customizado */
+        .navbar {
             transition: var(--transition);
+            padding: 20px 0;
+            background: transparent;
         }
 
-        header.sticky {
-            background: rgba(255, 255, 255, 0.98);
-            padding: 15px 8%;
+        .navbar.sticky {
+            background: white !important;
+            padding: 10px 0;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
 
-        .logo {
+        .navbar-brand {
             font-family: 'Montserrat', sans-serif;
             font-weight: 700;
-            font-size: 1.5rem;
-            color: #fff;
-            text-decoration: none;
-            transition: var(--transition);
+            color: white !important;
         }
 
-        header.sticky .logo { color: var(--primary); }
-        .logo span { color: var(--secondary); }
+        .navbar.sticky .navbar-brand { color: var(--primary) !important; }
+        .navbar-brand span { color: var(--secondary); }
 
-        nav ul {
-            display: flex;
-            list-style: none;
-        }
-
-        nav ul li { margin-left: 35px; }
-
-        nav ul li a {
-            text-decoration: none;
-            color: #fff;
+        .nav-link {
+            color: white !important;
             font-weight: 500;
-            font-size: 0.9rem;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            margin: 0 10px;
             transition: var(--transition);
         }
 
-        header.sticky nav ul li a { color: var(--dark); }
-        nav ul li a:hover { color: var(--secondary) !important; }
+        .navbar.sticky .nav-link { color: var(--dark) !important; }
+        .nav-link:hover { color: var(--secondary) !important; }
 
-        /* HERO SECTION COM PARALLAX REAL */
+        /* HERO SECTION COM PARALLAX */
         .hero {
             position: relative;
             height: 100vh;
             display: flex;
             align-items: center;
-            justify-content: center;
-            text-align: center;
             color: white;
-            /* IMAGEM DE FUNDO MODERNA INCORPORADA */
-            background-image: linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)), 
+            background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
                               url('https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?q=80&w=1920&auto=format&fit=crop');
-            background-attachment: fixed; /* Efeito Parallax */
+            background-attachment: fixed;
             background-position: center;
             background-repeat: no-repeat;
             background-size: cover;
         }
 
-        .hero-content h1 {
+        .hero h1 {
             font-family: 'Montserrat', sans-serif;
-            font-size: 4rem;
+            font-size: clamp(2.5rem, 5vw, 4rem);
             font-weight: 700;
-            margin-bottom: 20px;
-            text-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            animation: fadeInUp 1s ease;
         }
 
-        .hero-content p {
-            font-size: 1.4rem;
-            max-width: 750px;
-            margin: 0 auto 40px;
-            font-weight: 300;
-            animation: fadeInUp 1.2s ease;
-        }
-
-        .btn-main {
-            padding: 18px 45px;
-            background: var(--secondary);
-            color: white;
-            text-decoration: none;
-            border-radius: 50px;
-            font-weight: 600;
-            font-size: 1rem;
-            transition: var(--transition);
-            display: inline-block;
-            box-shadow: 0 10px 20px rgba(0, 168, 89, 0.3);
-        }
-
-        .btn-main:hover {
-            transform: translateY(-5px);
-            background: #008d4a;
-            box-shadow: 0 15px 30px rgba(0, 168, 89, 0.5);
-        }
-
-        /* Seções de Conteúdo */
-        section { padding: 120px 10%; }
-
-        .section-title {
-            text-align: center;
-            margin-bottom: 70px;
-        }
-
+        /* Seções */
+        section { padding: 100px 0; }
+        
         .section-title h2 {
             font-family: 'Montserrat', sans-serif;
-            font-size: 2.5rem;
             color: var(--primary);
-            text-transform: uppercase;
+            font-weight: 700;
+            position: relative;
+            display: inline-block;
+            padding-bottom: 15px;
         }
 
-        .section-title .bar {
-            width: 80px;
-            height: 5px;
+        .section-title h2::after {
+            content: '';
+            position: absolute;
+            width: 60px;
+            height: 4px;
             background: var(--secondary);
-            margin: 15px auto;
-            border-radius: 5px;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
         }
 
         /* Cards de Serviços */
-        .services-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 40px;
-        }
-
         .service-card {
             background: white;
-            padding: 50px 35px;
-            border-radius: 20px;
-            box-shadow: 0 15px 45px rgba(0,0,0,0.05);
-            text-align: center;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
             transition: var(--transition);
+            height: 100%;
             border: 1px solid #eee;
         }
 
         .service-card:hover {
-            transform: translateY(-15px);
-            box-shadow: 0 25px 60px rgba(0,0,0,0.1);
+            transform: translateY(-10px);
             border-color: var(--secondary);
         }
 
         .service-card i {
-            font-size: 3.5rem;
+            font-size: 3rem;
             color: var(--secondary);
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
 
-        .service-card h3 {
-            color: var(--primary);
+        /* Formulário de Contato */
+        .contact-form-wrapper {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+        }
+
+        .form-control {
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
             margin-bottom: 15px;
-            font-size: 1.4rem;
         }
 
-        /* Divisor Parallax Secundário */
-        .parallax-divider {
-            height: 450px;
-            background-image: linear-gradient(rgba(0, 74, 140, 0.8), rgba(0, 74, 140, 0.8)), 
-                              url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1920&auto=format&fit=crop');
-            background-attachment: fixed;
-            background-position: center;
-            background-size: cover;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            text-align: center;
+        .form-control:focus {
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 0.25rem rgba(0, 168, 89, 0.25);
         }
 
-        /* Contato e Mapa */
-        .contact-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 60px;
-            align-items: start;
-        }
-
-        .info-list .item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 35px;
-        }
-
-        .info-list .item i {
-            width: 60px;
-            height: 60px;
-            background: var(--light);
-            color: var(--primary);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            margin-right: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-        }
-
-        .map-wrapper {
-            border-radius: 25px;
+        /* Mapa */
+        .map-container {
+            border-radius: 20px;
             overflow: hidden;
-            height: 450px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+            height: 100%;
+            min-height: 400px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
 
-        /* Botão WhatsApp Flutuante */
+        /* WhatsApp Flutuante */
         .wpp-float {
             position: fixed;
-            bottom: 40px;
-            right: 40px;
+            bottom: 30px;
+            right: 30px;
             background: #25d366;
             color: white;
-            width: 70px;
-            height: 70px;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 38px;
-            box-shadow: 0 10px 25px rgba(37, 211, 102, 0.4);
+            font-size: 30px;
             z-index: 3000;
             text-decoration: none;
-            transition: var(--transition);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
         }
 
-        .wpp-float:hover { transform: scale(1.15) rotate(15deg); }
-
-        footer {
-            background: #111;
-            color: rgba(255,255,255,0.7);
-            padding: 60px 10% 30px;
-            text-align: center;
-        }
-
-        /* Animações */
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Mobile Adjustments */
-        @media (max-width: 992px) {
-            .hero-content h1 { font-size: 2.8rem; }
-            .contact-grid { grid-template-columns: 1fr; }
-            nav { display: none; } /* Mobile menu simplified for single page */
-        }
+        footer { background: #111; color: white; padding: 40px 0; }
     </style>
 </head>
-<body>
+<body data-bs-spy="scroll" data-bs-target="#main-nav">
 
-    <header id="main-nav">
-        <a href="#" class="logo">NÚCLEO <span>CONTABILIDADE</span></a>
-        <nav>
-            <ul>
-                <li><a href="#inicio">Início</a></li>
-                <li><a href="#sobre">Quem Somos</a></li>
-                <li><a href="#servicos">Serviços</a></li>
-                <li><a href="#contato">Localização</a></li>
-            </ul>
-        </nav>
-        <ul>
-            <li style="list-style: none;"><a style="text-decoration: none; color: white; text-transform: uppercase;" href="https://nucleocontabili.superlogica.net/clients/areadocondomino">Área do Condomínio</a></li>
-        </ul>
+    <nav class="navbar navbar-expand-lg fixed-top" id="main-nav">
+        <div class="container">
+            <a class="navbar-brand" href="#">NÚCLEO <span>CONTABILIDADE</span></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link text-white" href="#inicio">Início</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="#sobre">Sobre</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="#servicos">Serviços</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="#contato">Contato</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="https://nucleocontabili.superlogica.net/clients/areadocondomino">Área do Condomínio</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <header class="hero" id="inicio">
+        <div class="container text-center">
+            <h1 class="display-3 mb-4">Gestão de Excelência</h1>
+            <p class="lead mb-5">Administração moderna e contabilidade transparente para condomínios em Aracaju.</p>
+            <a href="#contato" class="btn btn-success btn-lg px-5 py-3 rounded-pill shadow">Solicitar Orçamento</a>
+        </div>
     </header>
 
-    <section class="hero" id="inicio">
-        <div class="hero-content">
-            <h1>Excelência em Gestão</h1>
-            <p>Administração transparente e contabilidade especializada para condomínios que buscam segurança e valorização constante em Aracaju - Sergipe.</p>
-            <a href="#contato" class="btn-main">Solicitar Proposta Digital</a>
-        </div>
-    </section>
-
     <section id="sobre">
-        <div class="section-title">
-            <h2>Quem Somos</h2>
-            <div class="bar"></div>
-        </div>
-        <div style="max-width: 850px; margin: 0 auto; text-align: center;">
-            <p style="font-size: 1.2rem; color: #666; font-weight: 300; line-height: 2;">
-                A <strong>Núcleo Contabilidade e Administradora</strong> é referência em soluções para condomínios. Nosso compromisso é com a transparência total, utilizando tecnologia de ponta para facilitar o dia a dia de síndicos e moradores, garantindo que cada condomínio alcance seu máximo potencial de desenvolvimento.
-            </p>
-        </div>
-    </section>
-
-    <section id="servicos" style="background: var(--light);">
-        <div class="section-title">
-            <h2>Serviços Especializados</h2>
-            <div class="bar"></div>
-        </div>
-        <div class="services-container">
-            <div class="service-card">
-                <i class="fas fa-file-invoice-dollar"></i>
-                <h3>Financeiro & Contas</h3>
-                <p>Previsão orçamentária, cobrança ativa de inadimplentes e gestão rigorosa de fluxo de caixa.</p>
+        <div class="container text-center">
+            <div class="section-title mb-5">
+                <h2>Quem Somos</h2>
             </div>
-            <div class="service-card">
-                <i class="fas fa-calculator"></i>
-                <h3>Contabilidade Digital</h3>
-                <p>Prestação de contas clara através de portal online e conciliação bancária diária.</p>
-            </div>
-            <div class="service-card">
-                <i class="fas fa-gavel"></i>
-                <h3>Apoio Jurídico</h3>
-                <p>Consultoria em assembleias, revisão de convenções e suporte em conflitos internos.</p>
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <p class="fs-5 text-secondary">A Núcleo Contabilidade e Administradora é focada na entrega de serviços ágeis e seguros, contribuindo para uma gestão transparente e valorização do patrimônio coletivo.</p>
+                </div>
             </div>
         </div>
     </section>
 
-    <div class="parallax-divider">
-        <div style="padding: 0 10%;">
-            <h2 style="font-size: 2.8rem; font-family: Montserrat; margin-bottom: 15px;">Transparência na palma da mão</h2>
-            <p style="font-size: 1.2rem; font-weight: 300;">Acesse boletos, atas e prestações de conta em tempo real pelo nosso aplicativo exclusivo.</p>
+    <section id="servicos" class="bg-light">
+        <div class="container">
+            <div class="section-title text-center mb-5">
+                <h2>Nossos Serviços</h2>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="service-card text-center">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                        <h3>Financeiro</h3>
+                        <p>Gestão de fluxo de caixa, boletos e redução ativa de inadimplência.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="service-card text-center">
+                        <i class="fas fa-calculator"></i>
+                        <h3>Contabilidade</h3>
+                        <p>Prestação de contas mensal digitalizada e conciliação bancária diária.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="service-card text-center">
+                        <i class="fas fa-gavel"></i>
+                        <h3>Assembleias</h3>
+                        <p>Apoio jurídico e administrativo para reuniões e decisões estratégicas.</p>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
+    </section>
 
     <section id="contato">
-        <div class="section-title">
-            <h2>Onde Estamos</h2>
-            <div class="bar"></div>
-        </div>
-        
-        <div class="contact-grid">
-            <div class="info-list">
-                <div class="item">
-                    <i class="fas fa-map-marked-alt"></i>
-                    <div>
-                        <h4 style="color: var(--primary);">Nosso Endereço</h4>
-                        <p>Rua Pacatuba, nº 254, Sala 12, Ed. Paulo Figueiredo<br>Centro, Aracaju - SE, 49010-150</p>
-                    </div>
-                </div>
-                <div class="item">
-                    <i class="fas fa-phone-alt"></i>
-                    <div>
-                        <h4 style="color: var(--primary);">Atendimento</h4>
-                        <p>(79) 3043-0401 / (79) 98144-0253</p>
-                    </div>
-                </div>
-                <div class="item">
-                    <i class="fas fa-envelope-open-text"></i>
-                    <div>
-                        <h4 style="color: var(--primary);">E-mail Comercial</h4>
-                        <p>nucleocondominial@hotmail.com</p>
-                    </div>
-                </div>
-                <div class="item">
-                    <i class="fas fa-clock"></i>
-                    <div>
-                        <h4 style="color: var(--primary);">Horário</h4>
-                        <p>Segunda a Sexta: 08:00 às 18:00</p>
-                    </div>
-                </div>
+        <div class="container">
+            <div class="section-title text-center mb-5">
+                <h2>Fale Conosco</h2>
             </div>
+            <div class="row g-5">
+                <div class="col-lg-6">
+                    <div class="mb-4">
+                        <h4 class="text-primary fw-bold"><i class="fas fa-map-marker-alt me-2"></i> Localização</h4>
+                        <p>Rua Pacatuba, nº 254, Sala 12, Centro, Aracaju - SE</p>
+                    </div>
+                    <div class="map-container">
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3917.47291772648!2d-37.0505!3d-10.9145!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTDCsDU0JzUyLjIiUyAzN8KwMDMnMDIuMiJX!5e0!3m2!1spt-BR!2sbr!4v1620000000000" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                    </div>
+                </div>
 
-            <div class="map-wrapper">
-                <iframe 
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3917.471852445851!2d-37.0515!3d-10.9165!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x71ab35791234567%3A0x123456789abcdef!2sR.%20Pacatuba%2C%20254%20-%20Centro%2C%20Aracaju%20-%20SE%2C%2049010-150!5e0!3m2!1spt-BR!2sbr!4v1700000000000!5m2!1spt-BR!2sbr" 
-                    width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy">
-                </iframe>
+                <div class="col-lg-6">
+                    <div class="contact-form-wrapper">
+                        <h4 class="mb-4 fw-bold">Envie uma Mensagem</h4>
+                        <form action="mailto:nucleocondominial@hotmail.com" method="post" enctype="text-plain">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <input type="text" class="form-control" placeholder="Seu Nome" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="email" class="form-control" placeholder="Seu E-mail" required>
+                                </div>
+                            </div>
+                            <input type="text" class="form-control" placeholder="Condomínio">
+                            <input type="text" class="form-control" placeholder="Assunto">
+                            <textarea class="form-control" rows="5" placeholder="Sua Mensagem" required></textarea>
+                            <button type="submit" class="btn btn-primary w-100 py-3 mt-2 fw-bold">ENVIAR AGORA</button>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
-    <a href="https://wa.me/5579996857079" class="wpp-float" target="_blank">
+    <a href="https://wa.me/5579981440253" class="wpp-float" target="_blank">
         <i class="fab fa-whatsapp"></i>
     </a>
 
-    <footer>
-        <h2 class="logo" style="color: #fff; margin-bottom: 15px;">NÚCLEO <span>CONTABILIDADE</span></h2>
-        <p>Expertise em Contabilidade e Administração Condominial</p>
-        <div style="margin: 25px 0; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 25px;">
-            <p style="font-size: 0.8rem;">© 2025 Marcos Antônio Oliveira Campos.<b>Todos os direitos reservados.</p>
+    <footer class="text-center">
+        <div class="container">
+            <p class="mb-0">© 2025 Marcos Antônio. Todos os direitos reservados. Aracaju/SE.</p>
+            <small class="text-muted">nucleocondominial@hotmail.com | (79) 98144-0253</small>
         </div>
     </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
     <script>
+        // Efeito do Menu ao Rolar
         window.addEventListener("scroll", function() {
-            const header = document.getElementById("main-nav");
-            header.classList.toggle("sticky", window.scrollY > 50);
-        });
-
-        // Script para garantir o deslizamento suave ao clicar no menu
-        document.querySelectorAll('nav a').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                e.preventDefault();
-                const targetId = this.getAttribute('href');
-                document.querySelector(targetId).scrollIntoView({
-                    behavior: 'smooth'
-                });
-            });
+            const nav = document.getElementById("main-nav");
+            if (window.scrollY > 50) {
+                nav.classList.add("sticky");
+            } else {
+                nav.classList.remove("sticky");
+            }
         });
     </script>
-
 </body>
 </html>
