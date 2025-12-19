@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Núcleo - Administração de Condomínios</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #004a8c;
+            --secondary: #00a859;
+            --dark: #1a1a1a;
+            --light: #f9f9f9;
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth; /* Tela deslizante suave */
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: #333;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Menu de Navegação */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 2000;
+            padding: 25px 8%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition);
+        }
+
+        header.sticky {
+            background: rgba(255, 255, 255, 0.98);
+            padding: 15px 8%;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: #fff;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        header.sticky .logo { color: var(--primary); }
+        .logo span { color: var(--secondary); }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+
+        nav ul li { margin-left: 35px; }
+
+        nav ul li a {
+            text-decoration: none;
+            color: #fff;
+            font-weight: 500;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: var(--transition);
+        }
+
+        header.sticky nav ul li a { color: var(--dark); }
+        nav ul li a:hover { color: var(--secondary) !important; }
+
+        /* HERO SECTION COM PARALLAX REAL */
+        .hero {
+            position: relative;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            /* IMAGEM DE FUNDO MODERNA INCORPORADA */
+            background-image: linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)), 
+                              url('https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?q=80&w=1920&auto=format&fit=crop');
+            background-attachment: fixed; /* Efeito Parallax */
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        .hero-content h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 4rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            animation: fadeInUp 1s ease;
+        }
+
+        .hero-content p {
+            font-size: 1.4rem;
+            max-width: 750px;
+            margin: 0 auto 40px;
+            font-weight: 300;
+            animation: fadeInUp 1.2s ease;
+        }
+
+        .btn-main {
+            padding: 18px 45px;
+            background: var(--secondary);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: var(--transition);
+            display: inline-block;
+            box-shadow: 0 10px 20px rgba(0, 168, 89, 0.3);
+        }
+
+        .btn-main:hover {
+            transform: translateY(-5px);
+            background: #008d4a;
+            box-shadow: 0 15px 30px rgba(0, 168, 89, 0.5);
+        }
+
+        /* Seções de Conteúdo */
+        section { padding: 120px 10%; }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 70px;
+        }
+
+        .section-title h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2.5rem;
+            color: var(--primary);
+            text-transform: uppercase;
+        }
+
+        .section-title .bar {
+            width: 80px;
+            height: 5px;
+            background: var(--secondary);
+            margin: 15px auto;
+            border-radius: 5px;
+        }
+
+        /* Cards de Serviços */
+        .services-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+        }
+
+        .service-card {
+            background: white;
+            padding: 50px 35px;
+            border-radius: 20px;
+            box-shadow: 0 15px 45px rgba(0,0,0,0.05);
+            text-align: center;
+            transition: var(--transition);
+            border: 1px solid #eee;
+        }
+
+        .service-card:hover {
+            transform: translateY(-15px);
+            box-shadow: 0 25px 60px rgba(0,0,0,0.1);
+            border-color: var(--secondary);
+        }
+
+        .service-card i {
+            font-size: 3.5rem;
+            color: var(--secondary);
+            margin-bottom: 25px;
+        }
+
+        .service-card h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+        }
+
+        /* Divisor Parallax Secundário */
+        .parallax-divider {
+            height: 450px;
+            background-image: linear-gradient(rgba(0, 74, 140, 0.8), rgba(0, 74, 140, 0.8)), 
+                              url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1920&auto=format&fit=crop');
+            background-attachment: fixed;
+            background-position: center;
+            background-size: cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+        }
+
+        /* Contato e Mapa */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: start;
+        }
+
+        .info-list .item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 35px;
+        }
+
+        .info-list .item i {
+            width: 60px;
+            height: 60px;
+            background: var(--light);
+            color: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-right: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .map-wrapper {
+            border-radius: 25px;
+            overflow: hidden;
+            height: 450px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+        }
+
+        /* Botão WhatsApp Flutuante */
+        .wpp-float {
+            position: fixed;
+            bottom: 40px;
+            right: 40px;
+            background: #25d366;
+            color: white;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 38px;
+            box-shadow: 0 10px 25px rgba(37, 211, 102, 0.4);
+            z-index: 3000;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .wpp-float:hover { transform: scale(1.15) rotate(15deg); }
+
+        footer {
+            background: #111;
+            color: rgba(255,255,255,0.7);
+            padding: 60px 10% 30px;
+            text-align: center;
+        }
+
+        /* Animações */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 992px) {
+            .hero-content h1 { font-size: 2.8rem; }
+            .contact-grid { grid-template-columns: 1fr; }
+            nav { display: none; } /* Mobile menu simplified for single page */
+        }
+    </style>
+</head>
+<body>
+
+    <header id="main-nav">
+        <a href="#" class="logo">NÚCLEO <span>CONTABILIDADE</span></a>
+        <nav>
+            <ul>
+                <li><a href="#inicio">Início</a></li>
+                <li><a href="#sobre">Quem Somos</a></li>
+                <li><a href="#servicos">Serviços</a></li>
+                <li><a href="#contato">Localização</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="hero" id="inicio">
+        <div class="hero-content">
+            <h1>Excelência em Gestão</h1>
+            <p>Administração transparente e contabilidade especializada para condomínios que buscam segurança e valorização constante em Aracaju - Sergipe.</p>
+            <a href="#contato" class="btn-main">Solicitar Proposta Digital</a>
+        </div>
+    </section>
+
+    <section id="sobre">
+        <div class="section-title">
+            <h2>Quem Somos</h2>
+            <div class="bar"></div>
+        </div>
+        <div style="max-width: 850px; margin: 0 auto; text-align: center;">
+            <p style="font-size: 1.2rem; color: #666; font-weight: 300; line-height: 2;">
+                A <strong>Núcleo Contabilidade e Administradora</strong> é referência em soluções para condomínios. Nosso compromisso é com a transparência total, utilizando tecnologia de ponta para facilitar o dia a dia de síndicos e moradores, garantindo que cada condomínio alcance seu máximo potencial de desenvolvimento.
+            </p>
+        </div>
+    </section>
+
+    <section id="servicos" style="background: var(--light);">
+        <div class="section-title">
+            <h2>Serviços Especializados</h2>
+            <div class="bar"></div>
+        </div>
+        <div class="services-container">
+            <div class="service-card">
+                <i class="fas fa-file-invoice-dollar"></i>
+                <h3>Financeiro & Contas</h3>
+                <p>Previsão orçamentária, cobrança ativa de inadimplentes e gestão rigorosa de fluxo de caixa.</p>
+            </div>
+            <div class="service-card">
+                <i class="fas fa-calculator"></i>
+                <h3>Contabilidade Digital</h3>
+                <p>Prestação de contas clara através de portal online e conciliação bancária diária.</p>
+            </div>
+            <div class="service-card">
+                <i class="fas fa-gavel"></i>
+                <h3>Apoio Jurídico</h3>
+                <p>Consultoria em assembleias, revisão de convenções e suporte em conflitos internos.</p>
+            </div>
+        </div>
+    </section>
+
+    <div class="parallax-divider">
+        <div style="padding: 0 10%;">
+            <h2 style="font-size: 2.8rem; font-family: Montserrat; margin-bottom: 15px;">Transparência na palma da mão</h2>
+            <p style="font-size: 1.2rem; font-weight: 300;">Acesse boletos, atas e prestações de conta em tempo real pelo nosso aplicativo exclusivo.</p>
+        </div>
+    </div>
+
+    <section id="contato">
+        <div class="section-title">
+            <h2>Onde Estamos</h2>
+            <div class="bar"></div>
+        </div>
+        
+        <div class="contact-grid">
+            <div class="info-list">
+                <div class="item">
+                    <i class="fas fa-map-marked-alt"></i>
+                    <div>
+                        <h4 style="color: var(--primary);">Nosso Endereço</h4>
+                        <p>Rua Pacatuba, nº 254, Sala 12, Ed. Paulo Figueiredo<br>Centro, Aracaju - SE, 49010-150</p>
+                    </div>
+                </div>
+                <div class="item">
+                    <i class="fas fa-phone-alt"></i>
+                    <div>
+                        <h4 style="color: var(--primary);">Atendimento</h4>
+                        <p>(79) 3043-0401 / (79) 98144-0253</p>
+                    </div>
+                </div>
+                <div class="item">
+                    <i class="fas fa-envelope-open-text"></i>
+                    <div>
+                        <h4 style="color: var(--primary);">E-mail Comercial</h4>
+                        <p>nucleocondominial@hotmail.com</p>
+                    </div>
+                </div>
+                <div class="item">
+                    <i class="fas fa-clock"></i>
+                    <div>
+                        <h4 style="color: var(--primary);">Horário</h4>
+                        <p>Segunda a Sexta: 08:00 às 18:00</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="map-wrapper">
+                <iframe 
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3917.471852445851!2d-37.0515!3d-10.9165!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x71ab35791234567%3A0x123456789abcdef!2sR.%20Pacatuba%2C%20254%20-%20Centro%2C%20Aracaju%20-%20SE%2C%2049010-150!5e0!3m2!1spt-BR!2sbr!4v1700000000000!5m2!1spt-BR!2sbr" 
+                    width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy">
+                </iframe>
+            </div>
+        </div>
+    </section>
+
+    <a href="https://wa.me/5579981440253" class="wpp-float" target="_blank">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <footer>
+        <h2 class="logo" style="color: #fff; margin-bottom: 15px;">NÚCLEO <span>CONTABILIDADE</span></h2>
+        <p>Expertise em Contabilidade e Administração Condominial</p>
+        <div style="margin: 25px 0; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 25px;">
+            <p style="font-size: 0.8rem;">© 2025 Marcos Antônio. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        window.addEventListener("scroll", function() {
+            const header = document.getElementById("main-nav");
+            header.classList.toggle("sticky", window.scrollY > 50);
+        });
+
+        // Script para garantir o deslizamento suave ao clicar no menu
+        document.querySelectorAll('nav a').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                document.querySelector(targetId).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+    
+</body>
+</html>
