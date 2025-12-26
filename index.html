@@ -59,25 +59,63 @@
         .navbar.sticky .nav-link { color: var(--dark) !important; }
         .nav-link:hover { color: var(--secondary) !important; }
 
-        /* HERO SECTION COM PARALLAX */
+        /* HERO SECTION COM PARALLAX REAL */
         .hero {
             position: relative;
             height: 100vh;
             display: flex;
             align-items: center;
+            justify-content: center;
+            text-align: center;
             color: white;
-            background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
-                              url('https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?q=80&w=1920&auto=format&fit=crop');
-            background-attachment: fixed;
+            /* IMAGEM DE FUNDO MODERNA INCORPORADA */
+            background-image: linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)), 
+                              url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1920&auto=format&fit=crop');
+            background-attachment: fixed; /* Efeito Parallax */
             background-position: center;
             background-repeat: no-repeat;
             background-size: cover;
         }
 
-        .hero h1 {
+        /* Imagens utilizadas:
+        https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?q=80&w=1920&auto=format&fit=crop
+        https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1920&auto=format&fit=crop
+       * /
+
+        .hero-content h1 {
             font-family: 'Montserrat', sans-serif;
-            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-size: 4rem;
             font-weight: 700;
+            margin-bottom: 20px;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            animation: fadeInUp 1s ease;
+        }
+
+        .hero-content p {
+            font-size: 1.4rem;
+            max-width: 750px;
+            margin: 0 auto 40px;
+            font-weight: 300;
+            animation: fadeInUp 1.2s ease;
+        }
+
+        .btn-main {
+            padding: 18px 45px;
+            background: var(--secondary);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: var(--transition);
+            display: inline-block;
+            box-shadow: 0 10px 20px rgba(0, 168, 89, 0.3);
+        }
+
+        .btn-main:hover {
+            transform: translateY(-5px);
+            background: #008d4a;
+            box-shadow: 0 15px 30px rgba(0, 168, 89, 0.5);
         }
 
         /* Seções */
@@ -90,6 +128,7 @@
             position: relative;
             display: inline-block;
             padding-bottom: 15px;
+            text-transform: uppercase;
         }
 
         .section-title h2::after {
@@ -125,33 +164,54 @@
             margin-bottom: 20px;
         }
 
-        /* Formulário de Contato */
-        .contact-form-wrapper {
-            background: white;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+        /* Divisor Parallax Secundário */
+        .parallax-divider {
+            height: 450px;
+            background-image: linear-gradient(rgba(0, 74, 140, 0.8), rgba(0, 74, 140, 0.8)), 
+                              url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1920&auto=format&fit=crop');
+            background-attachment: fixed;
+            background-position: center;
+            background-size: cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
         }
 
-        .form-control {
-            padding: 12px 15px;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-            margin-bottom: 15px;
+        /* Contato e Mapa */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: start;
         }
 
-        .form-control:focus {
-            border-color: var(--secondary);
-            box-shadow: 0 0 0 0.25rem rgba(0, 168, 89, 0.25);
+        .info-list .item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 35px;
         }
 
-        /* Mapa */
-        .map-container {
-            border-radius: 20px;
+        .info-list .item i {
+            width: 60px;
+            height: 60px;
+            background: var(--light);
+            color: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-right: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .map-wrapper {
+            border-radius: 25px;
             overflow: hidden;
-            height: 100%;
-            min-height: 400px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            height: 450px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
         }
 
         /* WhatsApp Flutuante */
@@ -199,7 +259,7 @@
     <header class="hero" id="inicio">
         <div class="container text-center">
             <h1 class="display-3 mb-4">Gestão de Excelência</h1>
-            <p class="lead mb-5">Administração moderna e contabilidade transparente para condomínios em Aracaju.</p>
+            <p class="lead mb-5">Administração moderna, contabilidade especializada e transparente para condomínios que buscam segurança e valorização</p>
             <a href="#contato" class="btn btn-success btn-lg px-5 py-3 rounded-pill shadow">Solicitar Orçamento</a>
         </div>
     </header>
@@ -211,7 +271,7 @@
             </div>
             <div class="row justify-content-center">
                 <div class="col-lg-8">
-                    <p class="fs-5 text-secondary">A Núcleo Contabilidade e Administradora é focada na entrega de serviços ágeis e seguros, contribuindo para uma gestão transparente e valorização do patrimônio coletivo.</p>
+                    <p class="fs-5 text-secondary">A <strong>Núcleo Contabilidade e Administradora</strong> é referência em soluções para condomínios. Focada na entrega de serviços ágeis e seguros, contribuindo para uma gestão transparente e valorização do patrimônio coletivo. Utilizamos tecnologia de ponta para facilitar o dia a dia de síndicos e moradores, garantindo que cada condomínio alcance seu máximo potencial de desenvolvimento.</p>
                 </div>
             </div>
         </div>
@@ -248,41 +308,58 @@
         </div>
     </section>
 
-    <section id="contato">
-        <div class="container">
-            <div class="section-title text-center mb-5">
-                <h2>Fale Conosco</h2>
+    <section id="transparencia">
+        <div class="parallax-divider">
+            <div style="padding: 0 10%;">
+                <h2 style="font-size: 2.8rem; font-family: Montserrat; margin-bottom: 15px;">Transparência na palma da mão</h2>
+                <p style="font-size: 1.2rem; font-weight: 300;">Acesse boletos, atas e prestações de conta em tempo real pelo nosso aplicativo exclusivo.</p>
             </div>
-            <div class="row g-5">
-                <div class="col-lg-6">
-                    <div class="mb-4">
-                        <h4 class="text-primary fw-bold"><i class="fas fa-map-marker-alt me-2"></i> Localização</h4>
-                        <p>Rua Pacatuba, nº 254, Sala 12, Centro, Aracaju - SE</p>
-                    </div>
-                    <div class="map-container">
-                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3917.47291772648!2d-37.0505!3d-10.9145!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTDCsDU0JzUyLjIiUyAzN8KwMDMnMDIuMiJX!5e0!3m2!1spt-BR!2sbr!4v1620000000000" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
-                    </div>
-                </div>
+        </div>
+    </section>
 
-                <div class="col-lg-6">
-                    <div class="contact-form-wrapper">
-                        <h4 class="mb-4 fw-bold">Envie uma Mensagem</h4>
-                        <form action="mailto:nucleocondominial@hotmail.com" method="post" enctype="text-plain">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <input type="text" class="form-control" placeholder="Seu Nome" required>
-                                </div>
-                                <div class="col-md-6">
-                                    <input type="email" class="form-control" placeholder="Seu E-mail" required>
-                                </div>
-                            </div>
-                            <input type="text" class="form-control" placeholder="Condomínio">
-                            <input type="text" class="form-control" placeholder="Assunto">
-                            <textarea class="form-control" rows="5" placeholder="Sua Mensagem" required></textarea>
-                            <button type="submit" class="btn btn-primary w-100 py-3 mt-2 fw-bold">ENVIAR AGORA</button>
-                        </form>
+    <section id="contato">
+        <div class="section-title text-center mb-5">
+            <h2>Onde Estamos</h2>
+            <div class="bar"></div>
+        </div>
+        
+        <div class="contact-grid">
+            <div class="info-list">
+                <div class="item">
+                    <i class="fas fa-map-marked-alt"></i>
+                    <div>
+                        <h4 style="color: var(--primary);">Nosso Endereço</h4>
+                        <p>Rua Pacatuba, nº 254, Sala 12 - Ed. Paulo Figueiredo<br>Centro, Aracaju/SE, CEP 49010-150</p>
                     </div>
                 </div>
+                <div class="item">
+                    <i class="fas fa-phone-alt"></i>
+                    <div>
+                        <h4 style="color: var(--primary);">Atendimento</h4>
+                        <p>(79) 3043-0401 | (79) 98144-0253</p>
+                    </div>
+                </div>
+                <div class="item">
+                    <i class="fas fa-envelope-open-text"></i>
+                    <div>
+                        <h4 style="color: var(--primary);">E-mail Comercial</h4>
+                        <p>nucleocondominial@hotmail.com</p>
+                    </div>
+                </div>
+                <div class="item">
+                    <i class="fas fa-clock"></i>
+                    <div>
+                        <h4 style="color: var(--primary);">Horário</h4>
+                        <p>Segunda a Sexta: 08:00 às 18:00</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="map-wrapper">
+                <iframe 
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3917.471852445851!2d-37.0515!3d-10.9165!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x71ab35791234567%3A0x123456789abcdef!2sR.%20Pacatuba%2C%20254%20-%20Centro%2C%20Aracaju%20-%20SE%2C%2049010-150!5e0!3m2!1spt-BR!2sbr!4v1700000000000!5m2!1spt-BR!2sbr" 
+                    width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy">
+                </iframe>
             </div>
         </div>
     </section>
@@ -293,8 +370,11 @@
 
     <footer class="text-center">
         <div class="container">
-            <p class="mb-0">© 2025 Marcos Antônio. Todos os direitos reservados. Aracaju/SE.</p>
-            <small class="text-muted">nucleocondominial@hotmail.com | (79) 98144-0253</small>
+            <p class="mb-0">Copyright © 2025 Marcos Antônio O. Campos<br>Todos os direitos reservados</p>
+            <small class="text-white">marcosaoc@msn.com | (79) 98802-7636</small>
+                            <a href="https://wa.me/5579988027636" target="_blank">
+                    <i class="fab fa-whatsapp"></i>
+                </a>
         </div>
     </footer>
 
