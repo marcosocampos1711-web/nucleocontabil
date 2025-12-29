@@ -253,11 +253,12 @@
             top: 50%;                           /* Centraliza verticalmente */
             left: 50%;                          /* Centraliza horizontalmente */
             transform: translate(-50%, -50%);
-            opacity: 0.1;                       /* Transparência */
+            opacity: 0.6;                       /* Transparência */
             z-index: -1;                        /* Fica atrás do conteúdo */
             width: 300px;                       /* Ajuste do tamanho */
             background: none;                   /* Sem cor de fundo */
             box-shadow: none;                   /* Sem sombra */
+            pointer-events: none;
             mix-blend-mode: multiply;
         }
 
@@ -269,9 +270,9 @@
 
         <div class="container">
             <!-- Marca d'água -->
-            <img src="nucleo.jpg" alt="Marca d'água" class="watermark rounded">
+            <img src="nucleo.png" alt="Marca d'água" class="watermark rounded">
             
-            <a class="navbar-brand" href="#"><img class="rounded" src="nucleo.jpg" alt="Logo" width="50px"> Núcleo <span>Contabilidade</span></a>
+            <a class="navbar-brand" href="#"><img class="rounded thumbnail" src="nucleo.png" alt="Logo" width="50px" style="pointer-events: none;"> Núcleo <span>Contabilidade</span></a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -371,8 +372,8 @@
                 <p style="font-size: 1.2rem; font-weight: 300;">Acesse boletos, atas e prestações de conta em tempo real pelo nosso aplicativo exclusivo.</p>
                 <h5 style="font-size: 1.4rem; font-family: Montserrat; margin-bottom: 15px;">Baixe o aplicativo</h5>
                 <div class="container-fluid d-flex justify-content-center gap-2 w-100">
-                    <a href="https://apps.apple.com/br/app/gruvi/id1561610983" target="_blank" class="btn btn-success btn-sm px-2 py-1 rounded-pill shadow w-sm-auto"><img src="https://img.icons8.com/?size=100&id=4PbFeZOKAc61&format=png&color=000000" width="30px"> IOS</a>
-                    <a href="https://play.google.com/store/apps/details?id=app.gruvi" target="_blank" class="btn btn-success btn-sm px-2 py-1 rounded-pill shadow w-sm-auto"><img src="https://img.icons8.com/?size=100&id=2586&format=png&color=000000" width="30px"> ANDROID</a>
+                    <a href="https://apps.apple.com/br/app/gruvi/id1561610983" target="_blank" class="btn btn-success btn-sm px-2 py-1 rounded-pill shadow w-sm-auto"><img class="img-fluid thumbnail" src="https://img.icons8.com/?size=100&id=4PbFeZOKAc61&format=png&color=000000" width="30px"> IOS</a>
+                    <a href="https://play.google.com/store/apps/details?id=app.gruvi" target="_blank" class="btn btn-success btn-sm px-2 py-1 rounded-pill shadow w-sm-auto"><img class="img-fluid thumbnail" src="https://img.icons8.com/?size=100&id=2586&format=png&color=000000" width="30px"> ANDROID</a>
                 </div>
             </div>
         </div>
