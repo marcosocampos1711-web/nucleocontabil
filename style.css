@@ -204,8 +204,8 @@ section { padding: 100px 0; }
 /* WhatsApp Flutuante */
 .wpp-float {
     position: fixed;
-    bottom: 95px;
-    right: 28px;
+    bottom: 60px; /* 95px; */
+    right: 15px; /* 28px; */
     background: #25d366;
     color: white;
     width: 60px;
