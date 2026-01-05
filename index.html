@@ -11,7 +11,7 @@
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <link rel="stylesheet" type="text/css" href="nucleo.css">
+    <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body data-bs-spy="scroll" data-bs-target="#main-nav">
     <nav class="navbar navbar-expand-lg fixed-top" id="main-nav">
@@ -50,9 +50,9 @@
             <div class="section-title mb-5">
                 <h2>Quem Somos</h2>
             </div>
-            <div class="row justify-content-center">
+            <div class="row justify-content-center mb-5">
                 <div class="col-lg-8">
-                    <p class="fs-5 text-secondary">A <strong>Núcleo Contabilidade e Administradora</strong> é referência em soluções para condomínios. Focada na entrega de serviços ágeis e seguros, contribuindo para uma gestão transparente e valorização do patrimônio coletivo. Utilizamos tecnologia de ponta para facilitar o dia a dia de síndicos e moradores, garantindo que cada condomínio alcance seu máximo potencial de desenvolvimento.</p>
+                    <p class="fs-5 text-secondary">A <strong>Núcleo Contabilidade Administradora de Condomínio</strong> é referência em soluções para condomínios. Focada na entrega de serviços ágeis e seguros, contribuindo para uma gestão transparente e valorização do patrimônio coletivo. Utilizamos tecnologia de ponta para facilitar o dia a dia de síndicos e moradores, garantindo que cada condomínio alcance seu máximo potencial de desenvolvimento.</p>
                 </div>
             </div>
 
@@ -61,7 +61,7 @@
                     <div class="service-card text-center">
                         <i class="fas fa-award"></i>
                         <h3>Missão</h3>
-                        <p>Oferecer produtos e serviços de gestão condominial com excelência, atuando próximo aos clientes, zelando por sua idoneidade de forma irrestrita, e provendo equilíbrio financeiro enquanto valorizamos nossos colaboradores e geramos a lucratividade desejada.</p>
+                        <p class="hero-content">Oferecer produtos e serviços de gestão condominial com excelência, atuando próximo aos clientes, zelando por sua idoneidade de forma irrestrita, e provendo equilíbrio financeiro enquanto valorizamos nossos colaboradores e geramos a lucratividade desejada.</p>
                     </div>
                 </div>
                 <div class="col-md-4">
@@ -127,7 +127,7 @@
         </div>
     </section>
 
-    <section id="contato">
+    <section id="ondestamos">
         <div class="section-title text-center mb-5">
             <h2>Onde Estamos</h2>
             <div class="bar"></div>
@@ -155,7 +155,7 @@
                     <i class="fas fa-envelope-open-text"></i>
                     <div>
                         <h4 style="color: var(--primary);">E-mail Comercial</h4>
-                        <p>nucleocondominial@hotmail.com</p>
+						<p>atendimento@nucleocondominio.com.br</p>
                     </div>
                 </div>
                 <div class="item">
@@ -175,11 +175,36 @@
             </div>
         </div>
     </section>
+	
+	<section id="contato">
+		<div class="section-title text-center mb-5">
+			<h2>Fale Conosco</h2>
+			<div class="bar"></div>
+		</div>
+		
+		<div class="row justify-content-center mb-5 mx-2">
+            <div class="col-md-6">
+                <form action="https://formspree.io/f/xjgkzroy" method="POST">
+				    <input type="hidden" name="_next" value="https://marcosocampos1711-web.github.io/nucleocontabil">
 
-    <!-- <a href="https://wa.me/5579991413914?text=Olá! Preciso de informações sobre os serviços da Núcleo Contabilidade." class="wpp-float" target="_blank">
+				    <label for="nome">Nome:</label><br>
+				    <input class="form-control" type="text" id="nome" name="nome" required><br>
+
+				    <label for="email">E-mail:</label><br>
+				    <input class="form-control" type="email" id="email" name="email" required><br>
+
+				    <label for="mensagem">Mensagem:</label><br>
+				    <textarea class="form-control" id="mensagem" name="mensagem" rows="4" required></textarea><br>
+
+				    <button class="btn btn-primary" type="submit">Enviar Mensagem</button>
+                </form>
+            </div>
+		</div>
+	</section>
+
+    <a href="https://wa.me/5579991413914?text=Olá! Preciso de informações sobre os serviços da Núcleo Contabilidade." class="wpp-float" target="_blank">
         <i class="fab fa-whatsapp"></i>
-    </a> -->
-
+    </a>
 
     <footer class="text-center">
         <div class="container">
@@ -197,10 +222,11 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="nucleo.js"></script>
+    <script src="script.js"></script>
 
-    <script src="https://cdn.botpress.cloud/webchat/v3.5/inject.js"></script>
+    <!-- <script src="https://cdn.botpress.cloud/webchat/v3.5/inject.js"></script>
     <script src="https://files.bpcontent.cloud/2025/12/30/00/20251230003429-3873DMDP.js" defer></script>
-    <script src="https://studio.botpress.cloud/home?exploreHub=1&hubItemId=intver_01KCPW32DHHQS3BPJN0HA5MPB2&currentTab=integrations" defer></script>
+
+    <script src="https://studio.botpress.cloud/home?exploreHub=1&hubItemId=intver_01KCPW32DHHQS3BPJN0HA5MPB2&currentTab=integrations" defer></script> -->
 </body>
 </html>
