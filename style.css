@@ -1,11 +1,13 @@
 :root {
-    --primary: #004a8c;
-    --secondary: #00a859;
-    --tertiary: #b02b2e;
-    --dark: #1a1a1a;
-    --light: #f9f9f9;
+    --primary: #004a8c; /* Azul */
+    --secondary: #00a859; /* Verde #00a859 | Verde Limão #43bd1f */
+    --tertiary: #b02b2e; /* Vermelho Grena */
+    --dark: #1a1a1a; /* Preto */
+    --light: #f9f9f9; /* Branco */
     --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+/*  */
 
 body {
     font-family: 'Poppins', sans-serif;
@@ -16,7 +18,7 @@ body {
 /* Menu de Navegação Customizado */
 .navbar {
     transition: var(--transition);
-    padding: 20px 0;
+    padding: 10px 0; /* padding: 20px 0;  */
     background: transparent;
 }
 
@@ -46,7 +48,7 @@ body {
 .navbar.sticky .nav-link { color: var(--dark) !important; }
 .nav-link:hover { color: var(--secondary) !important; }
 
-/* HERO SECTION COM PARALLAX REAL */
+/* SEÇÃO HERO COM PARALAX REAL */
 .hero {
     position: relative;
     height: 100vh;
@@ -251,6 +253,34 @@ section { padding: 100px 0; }
 
 img {
     pointer-events: none;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 5px; /* gap: 20px; */
+}
+
+nav ul li a {
+  text-decoration: none;
+  color: #333;
+  position: relative; /* necessário para o ::after */
+  padding: 3px 0;
+}
+
+nav ul li a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0%;
+  height: 2px;
+  background-color: #004a8c; /* cor da barra #007bff */
+  transition: width 0.3s ease; /* animação suave */
+}
+
+nav ul li a:hover::after {
+  width: 100%; /* barra aparece ao passar o mouse */
 }
 
 footer { background: #111; color: white; padding: 40px 0; }
