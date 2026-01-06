@@ -242,7 +242,8 @@ section { padding: 100px 0; }
     transform: translate(-50%, -50%);
     opacity: 0.2;                   /* Transparência */
     z-index: -1;                    /* Fica atrás do conteúdo */
-    width: 300px;                   /* Ajuste do tamanho */
+    width: 100vmin;                 /* Ajuste do tamanho */
+    heidht: 100vmin;
     background: none;               /* Sem cor de fundo */
     box-shadow: none;               /* Sem sombra */
     mix-blend-mode: multiply;
@@ -253,6 +254,3 @@ img {
 }
 
 footer { background: #111; color: white; padding: 40px 0; }
-
-
-
