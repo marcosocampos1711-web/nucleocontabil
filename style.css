@@ -153,7 +153,7 @@ section { padding: 100px 0; }
 
 /* Divisor Parallax Secundário */
 .parallax-divider {
-    height: 500px;
+    height: 800px;
     background-image: linear-gradient(rgba(0, 74, 140, 0.8), rgba(0, 74, 140, 0.8)), 
                       url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1920&auto=format&fit=crop');
     background-attachment: fixed;
@@ -253,5 +253,6 @@ img {
 }
 
 footer { background: #111; color: white; padding: 40px 0; }
+
 
 
