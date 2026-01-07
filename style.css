@@ -131,6 +131,17 @@ section { padding: 100px 0; }
     transform: translateX(-50%);
 }
 
+/* Campos Email */
+.service-email {
+    background: white;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+    transition: var(--transition);
+    height: 100%;
+    border: 1px solid #eee;
+}
+
 /* Cards de Serviços */
 .service-card {
     background: white;
@@ -142,8 +153,8 @@ section { padding: 100px 0; }
     border: 1px solid #eee;
 }
 
-.service-card:hover {
-    transform: translateY(-10px);
+.service-card, .service-email:hover {
+    transform: translateY(-5px);
     border-color: var(--secondary);
 }
 
