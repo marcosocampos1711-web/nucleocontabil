@@ -58,8 +58,7 @@ body {
     text-align: center;
     color: white;
     /* IMAGEM DE FUNDO MODERNA INCORPORADA */
-    background-image: linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)), 
-                      url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1920&auto=format&fit=crop');
+    background-image: linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)), url('../images/aracaju.jpg');
     background-attachment: fixed; /* Efeito Parallax */
     background-position: center;
     background-repeat: no-repeat;
@@ -295,3 +294,15 @@ nav ul li a:hover::after {
 }
 
 footer { background: #111; color: white; padding: 40px 0; }
+
+.card-img-top {
+    /* Ensures the image doesn't overflow the card during zoom */
+    overflow: hidden;
+    /* Smooth transition for the transform */
+    transition: transform 0.5s ease;
+}
+
+.custom-card-hover:hover .card-img-top {
+    /* Scales the image inside the card */
+    transform: scale(1.1);
+}
