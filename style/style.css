@@ -57,9 +57,9 @@ body {
     justify-content: center;
     text-align: center;
     color: white;
-    /* IMAGEM DE FUNDO MODERNA INCORPORADA
-    /*background-image: linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)), url('../images/aracaju.jpg');*/
-    background-image: url('../images/aracaju.jpg');
+    /* IMAGEM DE FUNDO MODERNA INCORPORADA*/
+    background-image: linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)), url('../images/aracaju.jpg');
+    /*background-image: url('../images/aracaju.jpg');*/
     background-attachment: fixed; /* Efeito Parallax */
     background-position: center;
     background-repeat: no-repeat;
@@ -307,4 +307,5 @@ footer { background: #111; color: white; padding: 40px 0; }
     /* Scales the image inside the card */
     transform: scale(1.1);
 }
+
 
