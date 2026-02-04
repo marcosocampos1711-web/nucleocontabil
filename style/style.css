@@ -1,309 +1,1304 @@
-:root {
-    --primary: #004a8c; /* Azul */
-    --secondary: #00a859; /* Verde #00a859 | Verde Limão #43bd1f */
-    --tertiary: #b02b2e; /* Vermelho Grena */
-    --dark: #1a1a1a; /* Preto */
-    --light: #f9f9f9; /* Branco */
-    --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BPRv - Sistema de Inventário</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        /* Definindo a fonte Inter como padrão para uma melhor legibilidade */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fb;
+        }
+        /* Estilos customizados para o scrollbar da tabela */
+        .scroll-container::-webkit-scrollbar {
+            height: 8px;
+        }
+        .scroll-container::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1; /* gray-300 */
+            border-radius: 4px;
+        }
+        .scroll-container::-webkit-scrollbar-track {
+            background-color: #f1f5f9; /* gray-100 */
+        }
+        .modal-content {
+            animation: slide-down 0.3s ease-out;
+        }
+        @keyframes slide-down {
+            0% { transform: translateY(-50px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+        /* Estilos para o menu de relatórios e modais de gestão */
+        #reports-menu-modal, #location-modal, #item-modal, #subitem-modal, #origin-modal, #delete-modal {
+            background-color: rgba(0, 0, 0, 0.6);
+        }
+        /* Classe oculta para impressão */
+        .print-only {
+            display: none;
+        }
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            .print-only {
+                display: block;
+            }
+            .list-table-print {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            .list-table-print th, .list-table-print td {
+                border: 1px solid #ccc;
+                padding: 4px 6px; /* Ajustado para 4px de padding */
+                text-align: left;
+                font-size: 7pt; /* UNIFICADO: Tamanho da fonte para relatórios */
+                word-wrap: break-word;
+            }
+            .summary-box {
+                margin-bottom: 20px;
+                padding: 10px;
+                border: 1px solid #ddd;
+                font-size: 11px;
+                break-inside: avoid;
+            }
+            .summary-title {
+                font-weight: bold;
+                margin-bottom: 5px;
+            }
+            .group-header {
+                font-size: 10pt;
+                font-weight: bold;
+                color: #2c3e50;
+            }
+            .subgroup-header {
+                font-size: 8pt;
+                font-weight: bold;
+                color: #34495e;
+            }
+            .asset-list {
+                list-style-type: disc; 
+                page-break-inside: avoid;
+                padding-left: 20px;
+            }
+            .asset-list li {
+                margin-bottom: 3px;
+            }
+            .footer {
+                position: fixed;
+                bottom: 0;
+                width: 100%;
+                text-align: center;
+                font-size: 7pt; /* UNIFICADO: Tamanho da fonte do rodapé */
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4 sm:p-8">
 
-/*  */
+    <div class="max-w-4xl mx-auto">
+        <header class="text-center mb-10 no-print">
+            <h1 class="text-xl sm:text-2xl font-bold text-gray-700">POLÍCIA MILITAR DO ESTADO DE SERGIPE</h1>
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-indigo-700">BPRv - Sistema de Inventário</h2>
+            <p class="text-sm text-gray-500 mt-2">Copyright © by 2025 1º Tenente Marcos Antônio</p>
+        </header>
 
-body {
-    font-family: 'Poppins', sans-serif;
-    color: #333;
-    overflow-x: hidden;
-}
+        <section id="form-section" class="bg-white p-6 rounded-xl shadow-lg mb-8 transition-all duration-300 no-print">
+            <div id="message-box" class="hidden p-4 mb-4 text-sm rounded-lg" role="alert"></div>
 
-/* Menu de Navegação Customizado */
-.navbar {
-    transition: var(--transition);
-    padding: 10px 0; /* padding: 20px 0;  */
-    background: transparent;
-}
+            <h2 id="form-title" class="text-xl font-semibold mb-4 text-gray-700">Adicionar Novo Ativo</h2>
+            <form id="inventory-form" class="space-y-4">
+                <input type="hidden" id="item-id">
+                
+                <div id="display-id" class="text-xs text-gray-400 hidden"></div>
 
-.navbar.sticky {
-    background: white !important;
-    padding: 10px 0;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-}
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                        <label for="item-select" class="block text-sm font-medium text-gray-600">Item (Obrigatório)</label>
+                        <div class="flex space-x-2 mt-1">
+                            <select id="item-select" required
+                                    class="block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm">
+                                <option value="" disabled selected>Selecione o Item</option>
+                            </select>
+                            <button type="button" onclick="openItemModal()"
+                                    class="px-3 py-2 bg-purple-100 text-purple-600 rounded-lg shadow-sm hover:bg-purple-200 focus:outline-none focus:ring-2 focus:ring-purple-400 text-sm whitespace-nowrap">
+                                Gerenciar
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="subitem-select" class="block text-sm font-medium text-gray-600">Subitem (Obrigatório)</label>
+                        <div class="flex space-x-2 mt-1">
+                            <select id="subitem-select" required
+                                    class="block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-pink-500 focus:border-pink-500 sm:text-sm">
+                                <option value="" disabled selected>Selecione o Subitem</option>
+                            </select>
+                            <button type="button" onclick="openSubitemModal()"
+                                    class="px-3 py-2 bg-pink-100 text-pink-600 rounded-lg shadow-sm hover:bg-pink-200 focus:outline-none focus:ring-2 focus:ring-pink-400 text-sm whitespace-nowrap">
+                                Gerenciar
+                            </button>
+                        </div>
+                    </div>
 
-.navbar-brand {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 700;
-    color: white !important;
-}
+                    <div>
+                        <label for="descricao-curta" class="block text-sm font-medium text-gray-600">Descrição (Obrigatório)</label>
+                        <input type="text" id="descricao-curta" required placeholder="Ex: Modelo, Marca, Série"
+                               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    </div>
+                </div>
 
-.navbar.sticky .navbar-brand { color: var(--primary) !important; }
-.navbar-brand span { color: var(--tertiary); }
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label for="local-select" class="block text-sm font-medium text-gray-600">Localização (Obrigatório)</label>
+                        <div class="flex space-x-2 mt-1">
+                            <select id="local-select" required
+                                    class="block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                <option value="" disabled selected>Selecione um local</option>
+                            </select>
+                            <button type="button" onclick="openLocationModal()"
+                                    class="px-3 py-2 bg-gray-100 text-gray-600 rounded-lg shadow-sm hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm whitespace-nowrap">
+                                Locais
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="origin-select" class="block text-sm font-medium text-gray-600">Origem (Obrigatório)</label>
+                        <div class="flex space-x-2 mt-1">
+                            <select id="origin-select" required
+                                    class="block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm">
+                                <option value="" disabled selected>Selecione a Origem</option>
+                            </select>
+                            <button type="button" onclick="openOriginModal()"
+                                    class="px-3 py-2 bg-yellow-100 text-yellow-600 rounded-lg shadow-sm hover:bg-yellow-200 focus:outline-none focus:ring-2 focus:ring-yellow-400 text-sm whitespace-nowrap">
+                                Gerenciar
+                            </button>
+                        </div>
+                    </div>
+                </div>
 
-.nav-link {
-    color: white !important;
-    font-weight: 500;
-    /*text-transform: uppercase;*/
-    margin: 0 10px;
-    transition: var(--transition);
-}
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                     <div>
+                        <label for="pat-serie" class="block text-sm font-medium text-gray-600">Pat/Série</label>
+                        <input type="text" id="pat-serie" placeholder="Ex: PTM00123 ou Serial XYZ (Opcional)"
+                               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    </div>
+                    
+                    <div>
+                        <label for="quantidade" class="block text-sm font-medium text-gray-600">Qtd (Obrigatório)</label>
+                        <input type="number" id="quantidade" required value="1" min="1"
+                               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm">
+                    </div>
+                </div>
+                
+                <div>
+                    <label for="descricao-detalhada" class="block text-sm font-medium text-gray-600">Observação (Opcional)</label>
+                    <textarea id="descricao-detalhada" rows="2" placeholder="Ex: Notas de compra, detalhes técnicos adicionais ou status de conservação."
+                              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
+                </div>
 
-.navbar.sticky .nav-link { color: var(--dark) !important; }
-.nav-link:hover { color: var(--secondary) !important; }
+                <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 pt-2">
+                    <button type="submit" id="submit-button"
+                            class="w-full sm:w-auto px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition duration-150 ease-in-out">
+                        Salvar Ativo
+                    </button>
+                    <button type="button" id="cancel-button" onclick="resetForm()"
+                            class="w-full sm:w-auto px-4 py-2 bg-gray-200 text-gray-700 font-semibold rounded-lg shadow-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition duration-150 ease-in-out hidden">
+                        Cancelar Edição
+                    </button>
+                </div>
+            </form>
+        </section>
+        
+        <section id="reports-entry-section" class="mb-4 no-print">
+            <button onclick="openReportsMenu()"
+                    class="w-full px-4 py-3 bg-teal-600 text-white font-bold text-lg rounded-xl shadow-lg hover:bg-teal-700 focus:outline-none focus:ring-4 focus:ring-teal-500 focus:ring-opacity-50 transition duration-150 ease-in-out">
+                📋 Acessar Relatórios de Listagem
+            </button>
+        </section>
+        
+        <section id="data-management-section" class="mb-8 p-6 bg-white rounded-xl shadow-lg no-print">
+            <h2 class="text-xl font-semibold mb-3 text-gray-700">Gestão de Dados (Backup/Restauração)</h2>
+            <div id="data-message-box" class="hidden p-4 mb-4 text-sm rounded-lg" role="alert"></div>
 
-/* SEÇÃO HERO COM PARALAX REAL */
-.hero {
-    position: relative;
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    color: white;
-    /* IMAGEM DE FUNDO MODERNA INCORPORADA
-    /*background-image: linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)), url('../images/aracaju.jpg');*/
-    background-image: url('../images/aracaju.jpg');
-    background-attachment: fixed; /* Efeito Parallax */
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-}
+            <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
+                <button onclick="backupData()"
+                        class="w-full sm:w-1/2 px-4 py-2 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-150">
+                    💾 Fazer Backup (JSON)
+                </button>
+                <div class="relative w-full sm:w-1/2">
+                    <input type="file" id="restore-file-input" accept=".json" class="hidden" onchange="restoreData(event)">
+                    <button type="button" onclick="document.getElementById('restore-file-input').click()"
+                            class="w-full px-4 py-2 bg-yellow-500 text-white font-semibold rounded-lg shadow-md hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition duration-150">
+                        ↩️ Restaurar Dados (JSON)
+                    </button>
+                </div>
+            </div>
+        </section>
 
-/* Imagens utilizadas:
-https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?q=80&w=1920&auto=format&fit=crop
-https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1920&auto=format&fit=crop */
 
-.hero-content h1 {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 4rem;
-    font-weight: 700;
-    margin-bottom: 20px;
-    text-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    animation: fadeInUp 1s ease;
-}
+        <section id="list-section" class="bg-white p-6 rounded-xl shadow-lg mb-8 no-print">
+            <h2 class="text-xl font-semibold mb-4 text-gray-700">Ativos Registrados</h2>
+            
+            <div id="filter-section" class="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <h3 class="text-lg font-semibold mb-3 text-gray-700">Filtros de Pesquisa Rápida</h3>
+                <form id="filter-form" class="space-y-4">
+                    <div>
+                        <label for="search-text" class="block text-sm font-medium text-gray-600">Busca Livre (Pat/Série, Descrição, Observação e Categorias)</label>
+                        <input type="text" id="search-text" placeholder="Digite um termo para busca..."
+                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
 
-.hero-content p {
-    text-align: justify;
-    font-size: 1.4rem;
-    max-width: 750px;
-    margin: 0 auto 40px;
-    font-weight: 300;
-    animation: fadeInUp 1.2s ease;
-}
+                    <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                        <div>
+                            <label for="filter-local-select" class="block text-sm font-medium text-gray-600">Localização</label>
+                            <select id="filter-local-select" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm">
+                                <option value="">Todos</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="filter-item-select" class="block text-sm font-medium text-gray-600">Item</label>
+                            <select id="filter-item-select" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm">
+                                <option value="">Todos</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="filter-subitem-select" class="block text-sm font-medium text-gray-600">Subitem</label>
+                            <select id="filter-subitem-select" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-pink-500 focus:border-pink-500 sm:text-sm">
+                                <option value="">Todos</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="filter-origin-select" class="block text-sm font-medium text-gray-600">Origem</label>
+                            <select id="filter-origin-select" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm">
+                                <option value="">Todos</option>
+                            </select>
+                        </div>
+                    </div>
 
-.btn-main {
-    padding: 18px 45px;
-    background: var(--secondary);
-    color: white;
-    text-decoration: none;
-    border-radius: 50px;
-    font-weight: 600;
-    font-size: 1rem;
-    transition: var(--transition);
-    display: inline-block;
-    box-shadow: 0 10px 20px rgba(0, 168, 89, 0.3);
-}
+                    <div class="flex flex-wrap gap-3 pt-2">
+                        <button type="button" onclick="filterInventory()"
+                                class="px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150">
+                            🔍 Aplicar Filtros
+                        </button>
+                        <button type="button" onclick="clearFilters()"
+                                class="px-4 py-2 bg-gray-400 text-white font-semibold rounded-lg shadow-md hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-300 transition duration-150">
+                            Limpar Filtros
+                        </button>
+                        <button type="button" onclick="printFilteredList()" id="print-filtered-btn"
+                                class="px-4 py-2 bg-teal-600 text-white font-semibold rounded-lg shadow-md hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 transition duration-150">
+                            🖨️ Imprimir Lista Filtrada (<span id="filtered-count">0</span> Und)
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="scroll-container overflow-x-auto rounded-lg border border-gray-200">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Pat/Série
+                            </th>
+                            <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Item/Subitem
+                            </th>
+                            <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Descrição
+                            </th>
+                            <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Local
+                            </th>
+                            <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style="width: 5%;">
+                                Qtd
+                            </th>
+                            <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Origem
+                            </th>
+                            <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">
+                                Observação
+                            </th>
+                            <th scope="col" class="px-3 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Ações
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventory-list" class="bg-white divide-y divide-gray-200">
+                        <tr>
+                            <td colspan="8" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">Nenhum ativo cadastrado.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
 
-.btn-main:hover {
-    transform: translateY(-5px);
-    background: #008d4a;
-    box-shadow: 0 15px 30px rgba(0, 168, 89, 0.5);
-}
+        <div id="reports-menu-modal" class="hidden fixed inset-0 overflow-y-auto h-full w-full z-50 transition-opacity duration-300 no-print">
+            <div class="relative top-10 mx-auto p-8 border max-w-3xl shadow-2xl rounded-xl bg-white modal-content">
+                <div class="flex justify-between items-center pb-4 border-b">
+                    <h3 class="text-2xl font-bold text-teal-700">Relatórios de Listagem e Pesquisa</h3>
+                    <button onclick="closeReportsMenu()" class="text-gray-400 hover:text-gray-600 text-3xl font-light leading-none">&times;</button>
+                </div>
+                
+                <p class="text-gray-500 mt-2 mb-4">Selecione o relatório de ativos desejado:</p>
 
-/* Seções */
-section { padding: 140px 0; }
+                <div id="report-options-menu" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    
+                    <div onclick="generateAndShowReport('list-by-location')" class="cursor-pointer p-4 bg-indigo-50 rounded-lg border border-indigo-200 hover:bg-indigo-100 transition duration-150 shadow-md">
+                        <h4 class="font-semibold text-indigo-700 flex items-center"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>Listagem por Localização</h4>
+                        <p class="text-sm text-gray-500 mt-1">Lista de ativos, agrupados por localização e **totalizando Qtd**.</p>
+                    </div>
 
-.section-title h2 {
-    font-family: 'Montserrat', sans-serif;
-    color: var(--primary);
-    font-weight: 700;
-    position: relative;
-    display: inline-block;
-    padding-bottom: 15px;
-    text-transform: uppercase;
-}
+                    <div onclick="generateAndShowReport('list-by-item-subitem')" class="cursor-pointer p-4 bg-purple-50 rounded-lg border border-purple-200 hover:bg-purple-100 transition duration-150 shadow-md">
+                        <h4 class="font-semibold text-purple-700 flex items-center"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path></svg>Listagem por Item/Subitem</h4>
+                        <p class="text-sm text-gray-500 mt-1">Lista de ativos, agrupados por Item e Subitem e **totalizando Qtd**.</p>
+                    </div>
+                    
+                    <div onclick="generateAndShowReport('quantitative-summary')" class="cursor-pointer p-4 bg-blue-50 rounded-lg border border-blue-200 hover:bg-blue-100 transition duration-150 shadow-md">
+                        <h4 class="font-semibold text-blue-700 flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-4m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16.5c-.77 1.333.192 3 1.732 3z"></path></svg>
+                            Relatório Quantitativo (Resumo)
+                        </h4>
+                        <p class="text-sm text-gray-500 mt-1">Gera o resumo total de ativos por Local, Item, Subitem e Origem.</p>
+                    </div>
 
-.section-title h2::after {
-    content: '';
-    position: absolute;
-    width: 60px;
-    height: 4px;
-    background: var(--secondary);
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-}
+                    <div onclick="generateAndShowReport('general-list-complete')" class="cursor-pointer p-4 bg-teal-50 rounded-lg border border-teal-200 hover:bg-teal-100 transition duration-150 shadow-md">
+                        <h4 class="font-semibold text-teal-700 flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path></svg>
+                            Listagem Geral Completa (Detalhada)
+                        </h4>
+                        <p class="text-sm text-gray-500 mt-1">Lista completa de todos os ativos, incluindo Pat/Série, Descrição e Observação.</p>
+                    </div>
+                    
+                </div>
+                
+                <div class="mt-8 pt-4 border-t border-gray-200">
+                    <div class="flex justify-between items-center mb-3">
+                        <h4 id="selected-report-title" class="text-xl font-semibold text-gray-700 hidden">Visualização do Relatório:</h4>
+                        <div class="flex space-x-2">
+                            <button id="print-current-report-btn" onclick="printCurrentReport()"
+                                    class="hidden px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm">
+                                🖨️ Imprimir Visualizado
+                            </button>
+                            <button id="export-excel-btn" onclick="exportCurrentReportToExcel()"
+                                    class="hidden px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm">
+                                📊 Exportar Excel (.xlsx)
+                            </button>
+                        </div>
+                    </div>
+                    <div id="report-display-area" class="bg-gray-50 p-4 rounded-lg min-h-24 max-h-96 overflow-y-auto">
+                        <p class="text-sm text-gray-500 italic">Selecione uma opção no menu acima para visualizar o relatório.</p>
+                    </div>
+                </div>
 
-/* Campos Email */
-.service-email {
-    background: white;
-    padding: 10px;
-    border-radius: 10px;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
-    transition: var(--transition);
-    height: 100%;
-    border: 1px solid #eee;
-}
+                <div class="mt-6 text-right pt-4 border-t">
+                    <button onclick="closeReportsMenu()" class="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition">
+                        Fechar Menu
+                    </button>
+                </div>
+            </div>
+        </div>
 
-/* Cards de Serviços */
-.service-card {
-    background: white;
-    padding: 40px;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-    transition: var(--transition);
-    height: 100%;
-    border: 1px solid #eee;
-}
+        <div id="location-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 no-print">
+            <div class="relative top-10 mx-auto p-6 border max-w-lg shadow-2xl rounded-xl bg-white modal-content">
+                <div class="flex justify-between items-center pb-3 border-b">
+                    <h3 class="text-xl font-bold text-gray-800">Gerenciar Localizações</h3>
+                    <button onclick="closeLocationModal()" class="text-gray-400 hover:text-gray-600">&times;</button>
+                </div>
+                
+                <div id="location-message-box" class="hidden p-3 mt-4 text-sm rounded-lg" role="alert"></div>
 
-.service-card, .service-email:hover {
-    transform: translateY(-5px);
-    border-color: var(--secondary);
-}
+                <form id="location-form" class="mt-4 space-y-3" onsubmit="handleLocationSubmit(event)">
+                    <input type="hidden" id="location-id">
+                    <div>
+                        <label for="location-name" class="block text-sm font-medium text-gray-600">Nome da Localização</label>
+                        <input type="text" id="location-name" required placeholder="Ex: Sala 101, Almoxarifado, Sala do Cmt"
+                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm">
+                    </div>
+                    <div class="flex space-x-2 pt-1">
+                        <button type="submit" id="location-submit-btn" class="px-4 py-2 bg-gray-600 text-white font-semibold rounded-lg shadow-md hover:bg-gray-700 transition">
+                            Salvar Local
+                        </button>
+                        <button type="button" id="location-cancel-btn" onclick="resetLocationForm()" class="px-4 py-2 bg-gray-200 text-gray-700 font-semibold rounded-lg shadow-md hover:bg-gray-300 transition hidden">
+                            Cancelar Edição
+                        </button>
+                    </div>
+                </form>
 
-.service-card i {
-    font-size: 3rem;
-    color: var(--secondary);
-    margin-bottom: 20px;
-}
+                <div class="mt-6">
+                    <h4 class="text-lg font-semibold mb-2 text-gray-700">Locais Cadastrados:</h4>
+                    <ul id="location-list" class="space-y-2 max-h-48 overflow-y-auto pr-2">
+                        </ul>
+                </div>
 
-/* Divisor Parallax Secundário */
-.parallax-divider {
-    height: 600px;
-    background-image: linear-gradient(rgba(0, 74, 140, 0.8), rgba(0, 74, 140, 0.8)), 
-                      url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1920&auto=format&fit=crop');
-    background-attachment: fixed;
-    background-position: center;
-    background-size: cover;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    text-align: center;
-}
+                <div class="mt-6 text-right pt-4 border-t">
+                    <button onclick="closeLocationModal()" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+                        Fechar
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="item-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 no-print">
+            <div class="relative top-10 mx-auto p-6 border max-w-lg shadow-2xl rounded-xl bg-white modal-content">
+                <div class="flex justify-between items-center pb-3 border-b">
+                    <h3 class="text-xl font-bold text-purple-800">Gerenciar Itens (Categorias Principais)</h3>
+                    <button onclick="closeItemModal()" class="text-gray-400 hover:text-gray-600">&times;</button>
+                </div>
+                
+                <div id="item-message-box" class="hidden p-3 mt-4 text-sm rounded-lg" role="alert"></div>
 
-/* Contato e Mapa */
-.contact-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 60px;
-    align-items: start;
-}
+                <form id="item-form" class="mt-4 space-y-3" onsubmit="handleItemSubmit(event)">
+                    <input type="hidden" id="item-entity-id">
+                    <div>
+                        <label for="item-entity-name" class="block text-sm font-medium text-gray-600">Nome do Item</label>
+                        <input type="text" id="item-entity-name" required placeholder="Ex: Informática, Mobiliário, Viatura"
+                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm">
+                    </div>
+                    <div class="flex space-x-2 pt-1">
+                        <button type="submit" id="item-submit-btn" class="px-4 py-2 bg-purple-600 text-white font-semibold rounded-lg shadow-md hover:bg-purple-700 transition">
+                            Salvar Item
+                        </button>
+                        <button type="button" id="item-cancel-btn" onclick="resetItemForm()" class="px-4 py-2 bg-gray-200 text-gray-700 font-semibold rounded-lg shadow-md hover:bg-gray-300 transition hidden">
+                            Cancelar Edição
+                        </button>
+                    </div>
+                </form>
 
-.info-list .item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 35px;
-}
+                <div class="mt-6">
+                    <h4 class="text-lg font-semibold mb-2 text-gray-700">Itens Cadastrados:</h4>
+                    <ul id="item-list" class="space-y-2 max-h-48 overflow-y-auto pr-2">
+                        </ul>
+                </div>
 
-.info-list .item i {
-    width: 60px;
-    height: 60px;
-    background: var(--light);
-    color: var(--primary);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    margin-right: 20px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-}
+                <div class="mt-6 text-right pt-4 border-t">
+                    <button onclick="closeItemModal()" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+                        Fechar
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="subitem-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 no-print">
+            <div class="relative top-10 mx-auto p-6 border max-w-lg shadow-2xl rounded-xl bg-white modal-content">
+                <div class="flex justify-between items-center pb-3 border-b">
+                    <h3 class="text-xl font-bold text-pink-800">Gerenciar Subitens (Subcategorias)</h3>
+                    <button onclick="closeSubitemModal()" class="text-gray-400 hover:text-gray-600">&times;</button>
+                </div>
+                
+                <div id="subitem-message-box" class="hidden p-3 mt-4 text-sm rounded-lg" role="alert"></div>
 
-.map-wrapper {
-    border-radius: 25px;
-    overflow: hidden;
-    height: 450px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.15);
-}
+                <form id="subitem-form" class="mt-4 space-y-3" onsubmit="handleSubitemSubmit(event)">
+                    <input type="hidden" id="subitem-entity-id">
+                    <div>
+                        <label for="subitem-entity-name" class="block text-sm font-medium text-gray-600">Nome do Subitem</label>
+                        <input type="text" id="subitem-entity-name" required placeholder="Ex: CPU, Monitor, Impressora, Cadeira, Mesa"
+                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-pink-500 focus:border-pink-500 sm:text-sm">
+                    </div>
+                    <div class="flex space-x-2 pt-1">
+                        <button type="submit" id="subitem-submit-btn" class="px-4 py-2 bg-pink-600 text-white font-semibold rounded-lg shadow-md hover:bg-pink-700 transition">
+                            Salvar Subitem
+                        </button>
+                        <button type="button" id="subitem-cancel-btn" onclick="resetSubitemForm()" class="px-4 py-2 bg-gray-200 text-gray-700 font-semibold rounded-lg shadow-md hover:bg-gray-300 transition hidden">
+                            Cancelar Edição
+                        </button>
+                    </div>
+                </form>
 
-/* WhatsApp Flutuante */
-.wpp-float {
-    position: fixed;
-    bottom: 60px; /* 95px; */
-    right: 15px; /* 28px; */
-    background: #25d366;
-    color: white;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 30px;
-    z-index: 3000;
-    text-decoration: none;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-}
+                <div class="mt-6">
+                    <h4 class="text-lg font-semibold mb-2 text-gray-700">Subitens Cadastrados:</h4>
+                    <ul id="subitem-list" class="space-y-2 max-h-48 overflow-y-auto pr-2">
+                        </ul>
+                </div>
 
-/* Ícones Redes Sociais */
-.redesocial {
-    background: #25d366;
-    color: white;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    align-items: center;
-    justify-content: center;
-    font-size: 48px;
-    text-decoration: none;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-}
+                <div class="mt-6 text-right pt-4 border-t">
+                    <button onclick="closeSubitemModal()" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+                        Fechar
+                    </button>
+                </div>
+            </div>
+        </div>
 
-/* Estilo da marca d'água */
-.watermark {
-    position: fixed;                /* Fixa na tela */
-    top: 50%;                       /* Centraliza verticalmente */
-    left: 50%;                      /* Centraliza horizontalmente */
-    transform: translate(-50%, -50%);
-    opacity: 0.1;                   /* Transparência */
-    z-index: -1;                    /* Fica atrás do conteúdo */
-    width: 100vmin;                 /* Ajuste do tamanho */
-    heidht: 100vmin;
-    background: none;               /* Sem cor de fundo */
-    box-shadow: none;               /* Sem sombra */
-    mix-blend-mode: multiply;
-}
+        <div id="origin-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 no-print">
+            <div class="relative top-10 mx-auto p-6 border max-w-lg shadow-2xl rounded-xl bg-white modal-content">
+                <div class="flex justify-between items-center pb-3 border-b">
+                    <h3 class="text-xl font-bold text-yellow-800">Gerenciar Origens (Procedência do Ativo)</h3>
+                    <button onclick="closeOriginModal()" class="text-gray-400 hover:text-gray-600">&times;</button>
+                </div>
+                
+                <div id="origin-message-box" class="hidden p-3 mt-4 text-sm rounded-lg" role="alert"></div>
 
-img {
-    pointer-events: none;
-}
+                <form id="origin-form" class="mt-4 space-y-3" onsubmit="handleOriginSubmit(event)">
+                    <input type="hidden" id="origin-entity-id">
+                    <div>
+                        <label for="origin-entity-name" class="block text-sm font-medium text-gray-600">Nome da Origem</label>
+                        <input type="text" id="origin-entity-name" required placeholder="Ex: Doação, Compra, Convênio, Patrimônio"
+                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm">
+                    </div>
+                    <div class="flex space-x-2 pt-1">
+                        <button type="submit" id="origin-submit-btn" class="px-4 py-2 bg-yellow-600 text-white font-semibold rounded-lg shadow-md hover:bg-yellow-700 transition">
+                            Salvar Origem
+                        </button>
+                        <button type="button" id="origin-cancel-btn" onclick="resetOriginForm()" class="px-4 py-2 bg-gray-200 text-gray-700 font-semibold rounded-lg shadow-md hover:bg-gray-300 transition hidden">
+                            Cancelar Edição
+                        </button>
+                    </div>
+                </form>
 
-nav ul {
-  list-style: none;
-  display: flex;
-  gap: 5px; /* gap: 20px; */
-}
+                <div class="mt-6">
+                    <h4 class="text-lg font-semibold mb-2 text-gray-700">Origens Cadastradas:</h4>
+                    <ul id="origin-list" class="space-y-2 max-h-48 overflow-y-auto pr-2">
+                        </ul>
+                </div>
 
-nav ul li a {
-  text-decoration: none;
-  color: #333;
-  position: relative; /* necessário para o ::after */
-  padding: 3px 0;
-}
+                <div class="mt-6 text-right pt-4 border-t">
+                    <button onclick="closeOriginModal()" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+                        Fechar
+                    </button>
+                </div>
+            </div>
+        </div>
 
-nav ul li a::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 0%;
-  height: 2px;
-  background-color: #004a8c; /* cor da barra #007bff */
-  transition: width 0.3s ease; /* animação suave */
-}
+        <div id="delete-modal" class="hidden fixed inset-0 bg-red-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 no-print">
+            <div class="relative top-1/4 mx-auto p-6 border max-w-sm shadow-2xl rounded-xl bg-white modal-content">
+                <div class="text-center">
+                    <svg class="mx-auto h-12 w-12 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16.5c-.77 1.333.192 3 1.732 3z"></path></svg>
+                    <h3 class="mt-2 text-lg leading-6 font-medium text-gray-900">Confirmação de Exclusão</h3>
+                    <div class="mt-2">
+                        <p class="text-sm text-gray-500" id="delete-modal-text">Tem certeza que deseja excluir permanentemente este ativo? Esta ação não pode ser desfeita.</p>
+                    </div>
+                </div>
+                <div class="mt-4 flex justify-center space-x-4">
+                    <button id="confirm-delete-btn" class="px-4 py-2 bg-red-600 text-white font-semibold rounded-lg shadow-md hover:bg-red-700 transition">
+                        Sim, Excluir
+                    </button>
+                    <button id="cancel-delete-btn" class="px-4 py-2 bg-gray-300 text-gray-800 font-semibold rounded-lg shadow-md hover:bg-gray-400 transition">
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-nav ul li a:hover::after {
-  width: 100%; /* barra aparece ao passar o mouse */
-}
+    <script>
+        // --- Constantes e Variáveis Globais ---
+        const STORAGE_KEY_INVENTORY = 'bprvInventory';
+        const STORAGE_KEY_LOCATIONS = 'bprvLocations';
+        const STORAGE_KEY_ITEMS = 'bprvItems';
+        const STORAGE_KEY_SUBITEMS = 'bprvSubitems';
+        const STORAGE_KEY_ORIGINS = 'bprvOrigins';
 
-footer { background: #111; color: white; padding: 40px 0; }
+        let inventory = [];
+        let locations = [];
+        let items = [];
+        let subitems = [];
+        let origins = [];
+        let filteredInventory = []; 
+        let currentReportData = {}; 
+        let itemIdToDelete = null;
 
-.card-img-top {
-    /* Ensures the image doesn't overflow the card during zoom */
-    overflow: hidden;
-    /* Smooth transition for the transform */
-    transition: transform 0.5s ease;
-}
+        // --- DOM References ---
+        const form = document.getElementById('inventory-form');
+        const itemIdInput = document.getElementById('item-id');
+        const displayId = document.getElementById('display-id');
+        const formTitle = document.getElementById('form-title');
+        const itemSelect = document.getElementById('item-select');
+        const subitemSelect = document.getElementById('subitem-select');
+        const descricaoCurtaInput = document.getElementById('descricao-curta');
+        const localSelect = document.getElementById('local-select');
+        const originSelect = document.getElementById('origin-select');
+        const patSerieInput = document.getElementById('pat-serie');
+        const quantidadeInput = document.getElementById('quantidade');
+        const descricaoDetalhadaInput = document.getElementById('descricao-detalhada');
+        const submitButton = document.getElementById('submit-button');
+        const cancelButton = document.getElementById('cancel-button');
+        const messageBox = document.getElementById('message-box');
 
-.custom-card-hover:hover .card-img-top {
-    /* Scales the image inside the card */
-    transform: scale(1.1);
-}
+        const inventoryList = document.getElementById('inventory-list');
+        const searchText = document.getElementById('search-text');
+        const filterLocalSelect = document.getElementById('filter-local-select');
+        const filterItemSelect = document.getElementById('filter-item-select');
+        const filterSubitemSelect = document.getElementById('filter-subitem-select');
+        const filterOriginSelect = document.getElementById('filter-origin-select');
+        const filteredCount = document.getElementById('filtered-count');
+
+        const reportsMenuModal = document.getElementById('reports-menu-modal');
+        const reportDisplayArea = document.getElementById('report-display-area');
+        const selectedReportTitle = document.getElementById('selected-report-title');
+        const printCurrentReportBtn = document.getElementById('print-current-report-btn');
+        const exportExcelBtn = document.getElementById('export-excel-btn'); // Novo
+
+        const deleteModal = document.getElementById('delete-modal');
+        const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+        const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
+
+        const locationModal = document.getElementById('location-modal');
+        const locationForm = document.getElementById('location-form');
+        const locationList = document.getElementById('location-list');
+        const locationIdInput = document.getElementById('location-id');
+        const locationNameInput = document.getElementById('location-name');
+        const locationSubmitBtn = document.getElementById('location-submit-btn');
+        const locationCancelBtn = document.getElementById('location-cancel-btn');
+        const locationMessageBox = document.getElementById('location-message-box');
+
+        const itemModal = document.getElementById('item-modal');
+        const itemForm = document.getElementById('item-form');
+        const itemList = document.getElementById('item-list');
+        const itemEntityIdInput = document.getElementById('item-entity-id');
+        const itemEntityNameInput = document.getElementById('item-entity-name');
+        const itemSubmitBtn = document.getElementById('item-submit-btn');
+        const itemCancelBtn = document.getElementById('item-cancel-btn');
+        const itemMessageBox = document.getElementById('item-message-box');
+
+        const subitemModal = document.getElementById('subitem-modal');
+        const subitemForm = document.getElementById('subitem-form');
+        const subitemList = document.getElementById('subitem-list');
+        const subitemEntityIdInput = document.getElementById('subitem-entity-id');
+        const subitemEntityNameInput = document.getElementById('subitem-entity-name');
+        const subitemSubmitBtn = document.getElementById('subitem-submit-btn');
+        const subitemCancelBtn = document.getElementById('subitem-cancel-btn');
+        const subitemMessageBox = document.getElementById('subitem-message-box');
+
+        const originModal = document.getElementById('origin-modal');
+        const originForm = document.getElementById('origin-form');
+        const originList = document.getElementById('origin-list');
+        const originEntityIdInput = document.getElementById('origin-entity-id');
+        const originEntityNameInput = document.getElementById('origin-entity-name');
+        const originSubmitBtn = document.getElementById('origin-submit-btn');
+        const originCancelBtn = document.getElementById('origin-cancel-btn');
+        const originMessageBox = document.getElementById('origin-message-box');
+
+        const dataMessageBox = document.getElementById('data-message-box');
+
+        // --- Funções de Carregamento e Persistência ---
+        function loadAllData() {
+            inventory = JSON.parse(localStorage.getItem(STORAGE_KEY_INVENTORY)) || [];
+            locations = JSON.parse(localStorage.getItem(STORAGE_KEY_LOCATIONS)) || [];
+            items = JSON.parse(localStorage.getItem(STORAGE_KEY_ITEMS)) || [];
+            subitems = JSON.parse(localStorage.getItem(STORAGE_KEY_SUBITEMS)) || [];
+            origins = JSON.parse(localStorage.getItem(STORAGE_KEY_ORIGINS)) || [];
+            filteredInventory = [...inventory];
+            updateCount();
+        }
+
+        function saveData() {
+            localStorage.setItem(STORAGE_KEY_INVENTORY, JSON.stringify(inventory));
+            localStorage.setItem(STORAGE_KEY_LOCATIONS, JSON.stringify(locations));
+            localStorage.setItem(STORAGE_KEY_ITEMS, JSON.stringify(items));
+            localStorage.setItem(STORAGE_KEY_SUBITEMS, JSON.stringify(subitems));
+            localStorage.setItem(STORAGE_KEY_ORIGINS, JSON.stringify(origins));
+        }
+
+        // --- Mensagens ---
+        function showMessage(message, type, box) {
+            box.innerText = message;
+            box.classList.remove('hidden', 'bg-green-100', 'text-green-800', 'bg-red-100', 'text-red-800', 'bg-blue-100', 'text-blue-800');
+            if (type === 'success') box.classList.add('bg-green-100', 'text-green-800');
+            else if (type === 'error') box.classList.add('bg-red-100', 'text-red-800');
+            else box.classList.add('bg-blue-100', 'text-blue-800');
+            setTimeout(() => box.classList.add('hidden'), 5000);
+        }
+
+        // --- Gerenciamento de Selects ---
+        function renderSelects() {
+            [itemSelect, subitemSelect, localSelect, originSelect].forEach(s => {
+                const opt0 = s.options[0];
+                s.innerHTML = '';
+                s.appendChild(opt0);
+            });
+
+            items.sort((a,b) => a.name.localeCompare(b.name)).forEach(i => {
+                const opt = new Option(i.name, i.name);
+                itemSelect.add(opt);
+            });
+            subitems.sort((a,b) => a.name.localeCompare(b.name)).forEach(si => {
+                const opt = new Option(si.name, si.name);
+                subitemSelect.add(opt);
+            });
+            locations.sort((a,b) => a.name.localeCompare(b.name)).forEach(l => {
+                const opt = new Option(l.name, l.name);
+                localSelect.add(opt);
+            });
+            origins.sort((a,b) => a.name.localeCompare(b.name)).forEach(o => {
+                const opt = new Option(o.name, o.name);
+                originSelect.add(opt);
+            });
+        }
+
+        function renderFilterSelects() {
+            [filterLocalSelect, filterItemSelect, filterSubitemSelect, filterOriginSelect].forEach(s => {
+                s.innerHTML = '<option value="">Todos</option>';
+            });
+
+            locations.sort((a,b) => a.name.localeCompare(b.name)).forEach(l => filterLocalSelect.add(new Option(l.name, l.name)));
+            items.sort((a,b) => a.name.localeCompare(b.name)).forEach(i => filterItemSelect.add(new Option(i.name, i.name)));
+            subitems.sort((a,b) => a.name.localeCompare(b.name)).forEach(si => filterSubitemSelect.add(new Option(si.name, si.name)));
+            origins.sort((a,b) => a.name.localeCompare(b.name)).forEach(o => filterOriginSelect.add(new Option(o.name, o.name)));
+        }
+
+        // --- CRUD Ativos ---
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            const id = itemIdInput.value;
+            const item = {
+                id: id || Date.now().toString(),
+                item: itemSelect.value,
+                subitem: subitemSelect.value,
+                descricaoCurta: descricaoCurtaInput.value,
+                local: localSelect.value,
+                origin: originSelect.value,
+                patSerie: patSerieInput.value,
+                quantidade: parseInt(quantidadeInput.value),
+                descricaoDetalhada: descricaoDetalhadaInput.value
+            };
+
+            if (id) {
+                const idx = inventory.findIndex(i => i.id === id);
+                inventory[idx] = item;
+                showMessage('Ativo atualizado com sucesso!', 'success', messageBox);
+            } else {
+                inventory.push(item);
+                showMessage('Ativo salvo com sucesso!', 'success', messageBox);
+            }
+
+            saveData();
+            resetForm();
+            filterInventory();
+        }
+
+        function resetForm() {
+            form.reset();
+            itemIdInput.value = '';
+            displayId.classList.add('hidden');
+            formTitle.innerText = 'Adicionar Novo Ativo';
+            submitButton.innerText = 'Salvar Ativo';
+            cancelButton.classList.add('hidden');
+        }
+
+        function editItem(id) {
+            const item = inventory.find(i => i.id === id);
+            if (!item) return;
+            itemIdInput.value = item.id;
+            displayId.innerText = `ID: ${item.id}`;
+            displayId.classList.remove('hidden');
+            itemSelect.value = item.item;
+            subitemSelect.value = item.subitem;
+            descricaoCurtaInput.value = item.descricaoCurta;
+            localSelect.value = item.local;
+            originSelect.value = item.origin;
+            patSerieInput.value = item.patSerie || '';
+            quantidadeInput.value = item.quantidade;
+            descricaoDetalhadaInput.value = item.descricaoDetalhada || '';
+            formTitle.innerText = 'Editar Ativo';
+            submitButton.innerText = 'Atualizar Ativo';
+            cancelButton.classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function openDeleteModal(id) {
+            itemIdToDelete = id;
+            deleteModal.classList.remove('hidden');
+        }
+
+        function closeDeleteModal() {
+            itemIdToDelete = null;
+            deleteModal.classList.add('hidden');
+        }
+
+        function deleteItemConfirmed() {
+            if (itemIdToDelete) {
+                inventory = inventory.filter(i => i.id !== itemIdToDelete);
+                saveData();
+                filterInventory();
+                showMessage('Ativo excluído!', 'error', messageBox);
+            }
+            closeDeleteModal();
+        }
+
+        // --- Filtros e Renderização da Lista ---
+        function filterInventory() {
+            const text = searchText.value.toLowerCase();
+            const local = filterLocalSelect.value;
+            const itemSel = filterItemSelect.value;
+            const subitemSel = filterSubitemSelect.value;
+            const originSel = filterOriginSelect.value;
+
+            filteredInventory = inventory.filter(i => {
+                const matchText = (i.patSerie || '').toLowerCase().includes(text) ||
+                                  i.item.toLowerCase().includes(text) ||
+                                  i.subitem.toLowerCase().includes(text) ||
+                                  i.descricaoCurta.toLowerCase().includes(text) ||
+                                  i.local.toLowerCase().includes(text) ||
+                                  i.origin.toLowerCase().includes(text) ||
+                                  (i.descricaoDetalhada || '').toLowerCase().includes(text);
+                const matchLocal = !local || i.local === local;
+                const matchItem = !itemSel || i.item === itemSel;
+                const matchSubitem = !subitemSel || i.subitem === subitemSel;
+                const matchOrigin = !originSel || i.origin === originSel;
+                return matchText && matchLocal && matchItem && matchSubitem && matchOrigin;
+            });
+            renderInventory(filteredInventory);
+            updateCount();
+        }
+
+        function clearFilters() {
+            searchText.value = '';
+            filterLocalSelect.value = '';
+            filterItemSelect.value = '';
+            filterSubitemSelect.value = '';
+            filterOriginSelect.value = '';
+            filterInventory();
+        }
+
+        function updateCount() {
+            filteredCount.innerText = filteredInventory.reduce((acc, curr) => acc + (curr.quantidade || 0), 0);
+        }
+
+        function renderInventory(data) {
+            inventoryList.innerHTML = '';
+            if (data.length === 0) {
+                inventoryList.innerHTML = '<tr><td colspan="8" class="px-6 py-4 text-center text-gray-500">Nenhum ativo encontrado.</td></tr>';
+                return;
+            }
+            data.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-gray-50 transition duration-150';
+                tr.innerHTML = `
+                    <td class="px-3 py-4 text-sm font-medium text-gray-900">${item.patSerie || '<span class="text-gray-400">N/A</span>'}</td>
+                    <td class="px-3 py-4 text-sm text-gray-600">
+                        <span class="block font-semibold text-purple-700">${item.item}</span>
+                        <span class="text-xs text-pink-600">${item.subitem}</span>
+                    </td>
+                    <td class="px-3 py-4 text-sm text-gray-600">${item.descricaoCurta}</td>
+                    <td class="px-3 py-4 text-sm text-gray-600">${item.local}</td>
+                    <td class="px-3 py-4 text-sm text-gray-600 font-bold">${item.quantidade}</td>
+                    <td class="px-3 py-4 text-sm text-gray-600">${item.origin}</td>
+                    <td class="px-3 py-4 text-sm text-gray-500 hidden md:table-cell italic max-w-xs truncate">${item.descricaoDetalhada || ''}</td>
+                    <td class="px-3 py-4 text-right text-sm font-medium">
+                        <button onclick="editItem('${item.id}')" class="text-indigo-600 hover:text-indigo-900 mr-3">Editar</button>
+                        <button onclick="openDeleteModal('${item.id}')" class="text-red-600 hover:text-red-900">Excluir</button>
+                    </td>
+                `;
+                inventoryList.appendChild(tr);
+            });
+        }
+
+        // --- Funções de Relatório ---
+        function openReportsMenu() {
+            reportsMenuModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeReportsMenu() {
+            reportsMenuModal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            reportDisplayArea.innerHTML = '<p class="text-sm text-gray-500 italic">Selecione uma opção no menu acima para visualizar o relatório.</p>';
+            selectedReportTitle.classList.add('hidden');
+            printCurrentReportBtn.classList.add('hidden');
+            exportExcelBtn.classList.add('hidden'); // Oculta botão excel ao fechar
+        }
+
+        function generateAndShowReport(type) {
+            let html = '';
+            let title = '';
+            let reportData = {};
+
+            if (type === 'list-by-location') {
+                title = 'Relatório de Ativos por Localização';
+                const grouped = {};
+                inventory.forEach(i => {
+                    if (!grouped[i.local]) grouped[i.local] = [];
+                    grouped[i.local].push(i);
+                });
+                Object.keys(grouped).sort().forEach(loc => {
+                    html += `<div class="mb-6"><h3 class="font-bold text-lg text-indigo-700 border-b-2 border-indigo-100 mb-2">${loc}</h3>`;
+                    html += `<table class="min-w-full text-xs mb-4"><thead><tr class="bg-gray-200">
+                        <th class="p-1 text-left">Pat/Série</th><th class="p-1 text-left">Item/Subitem</th><th class="p-1 text-left">Descrição</th><th class="p-1 text-right">Qtd</th></tr></thead><tbody>`;
+                    let subtotal = 0;
+                    grouped[loc].forEach(i => {
+                        subtotal += i.quantidade;
+                        html += `<tr><td class="p-1 border-b">${i.patSerie || '-'}</td><td class="p-1 border-b">${i.item}/${i.subitem}</td><td class="p-1 border-b">${i.descricaoCurta}</td><td class="p-1 border-b text-right">${i.quantidade}</td></tr>`;
+                    });
+                    html += `<tr class="font-bold bg-gray-50"><td colspan="3" class="p-1 text-right">Total Local:</td><td class="p-1 text-right">${subtotal}</td></tr></tbody></table></div>`;
+                });
+                reportData = { type, data: grouped };
+            } 
+            else if (type === 'list-by-item-subitem') {
+                title = 'Relatório de Ativos por Item/Subitem';
+                const grouped = {};
+                inventory.forEach(i => {
+                    const key = `${i.item} > ${i.subitem}`;
+                    if (!grouped[key]) grouped[key] = [];
+                    grouped[key].push(i);
+                });
+                Object.keys(grouped).sort().forEach(key => {
+                    html += `<div class="mb-6"><h3 class="font-bold text-lg text-purple-700 border-b-2 border-purple-100 mb-2">${key}</h3>`;
+                    html += `<table class="min-w-full text-xs mb-4"><thead><tr class="bg-gray-200">
+                        <th class="p-1 text-left">Pat/Série</th><th class="p-1 text-left">Localização</th><th class="p-1 text-left">Descrição</th><th class="p-1 text-right">Qtd</th></tr></thead><tbody>`;
+                    let subtotal = 0;
+                    grouped[key].forEach(i => {
+                        subtotal += i.quantidade;
+                        html += `<tr><td class="p-1 border-b">${i.patSerie || '-'}</td><td class="p-1 border-b">${i.local}</td><td class="p-1 border-b">${i.descricaoCurta}</td><td class="p-1 border-b text-right">${i.quantidade}</td></tr>`;
+                    });
+                    html += `<tr class="font-bold bg-gray-50"><td colspan="3" class="p-1 text-right">Total Categoria:</td><td class="p-1 text-right">${subtotal}</td></tr></tbody></table></div>`;
+                });
+                reportData = { type, data: grouped };
+            }
+            else if (type === 'quantitative-summary') {
+                title = 'Relatório Quantitativo (Resumo Geral)';
+                const cats = { Localização: 'local', Item: 'item', Subitem: 'subitem', Origem: 'origin' };
+                let exportData = [];
+                Object.entries(cats).forEach(([label, key]) => {
+                    html += `<div class="mb-4"><h3 class="font-bold text-md text-blue-700">${label}</h3><table class="min-w-full text-xs mb-2">`;
+                    const counts = {};
+                    inventory.forEach(i => counts[i[key]] = (counts[i[key]] || 0) + i.quantidade);
+                    Object.keys(counts).sort().forEach(val => {
+                        html += `<tr><td class="p-1 border-b">${val}</td><td class="p-1 border-b text-right font-bold">${counts[val]}</td></tr>`;
+                        exportData.push({ Categoria: label, Nome: val, Total: counts[val] });
+                    });
+                    html += `</table></div>`;
+                });
+                reportData = { type, data: exportData };
+            }
+            else if (type === 'general-list-complete') {
+                title = 'Listagem Geral Detalhada';
+                html += `<table class="min-w-full text-xs"><thead><tr class="bg-gray-200">
+                    <th class="p-1 text-left">Pat/Série</th><th class="p-1 text-left">Categorias</th><th class="p-1 text-left">Descrição/Obs</th><th class="p-1 text-left">Local</th><th class="p-1 text-right">Qtd</th></tr></thead><tbody>`;
+                inventory.forEach(i => {
+                    html += `<tr><td class="p-1 border-b">${i.patSerie || '-'}</td>
+                        <td class="p-1 border-b">${i.item}<br><span class="text-gray-500">${i.subitem}</span></td>
+                        <td class="p-1 border-b"><b>${i.descricaoCurta}</b><br><span class="italic text-gray-500">${i.descricaoDetalhada || ''}</span></td>
+                        <td class="p-1 border-b">${i.local}</td>
+                        <td class="p-1 border-b text-right font-bold">${i.quantidade}</td></tr>`;
+                });
+                html += `</tbody></table>`;
+                reportData = { type, data: inventory };
+            }
+
+            reportDisplayArea.innerHTML = html || '<p class="text-sm text-gray-500 italic">Sem dados para este relatório.</p>';
+            selectedReportTitle.innerText = `Visualização: ${title}`;
+            selectedReportTitle.classList.remove('hidden');
+            printCurrentReportBtn.classList.remove('hidden');
+            exportExcelBtn.classList.remove('hidden'); // Mostra botão excel
+            currentReportData = reportData;
+        }
+
+        // --- FUNÇÃO NOVA: EXPORTAR PARA EXCEL ---
+        function exportCurrentReportToExcel() {
+            if (!currentReportData || !currentReportData.data) {
+                alert("Nenhum dado disponível para exportação.");
+                return;
+            }
+
+            const data = currentReportData.data;
+            const type = currentReportData.type;
+            let sheetData = [];
+            let fileName = `Relatorio_BPRv_${new Date().toLocaleDateString().replace(/\//g, '-')}.xlsx`;
+
+            // Formatação conforme o tipo de relatório selecionado
+            if (type === 'general-list-complete') {
+                sheetData = data.map(item => ({
+                    "Pat/Série": item.patSerie || 'N/A',
+                    "Item": item.item,
+                    "Subitem": item.subitem,
+                    "Descrição": item.descricaoCurta,
+                    "Localização": item.local,
+                    "Quantidade": item.quantidade,
+                    "Origem": item.origin,
+                    "Observação": item.descricaoDetalhada || ''
+                }));
+            } else if (type === 'list-by-location' || type === 'list-by-item-subitem') {
+                Object.keys(data).forEach(group => {
+                    data[group].forEach(item => {
+                        sheetData.push({
+                            "Agrupamento": group,
+                            "Pat/Série": item.patSerie || 'N/A',
+                            "Descrição": item.descricaoCurta,
+                            "Localização": item.local,
+                            "Quantidade": item.quantidade,
+                            "Origem": item.origin
+                        });
+                    });
+                });
+            } else if (type === 'quantitative-summary') {
+                sheetData = data; // Já está formatado como array de objetos simples
+            }
+
+            if (sheetData.length === 0) return;
+
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.json_to_sheet(sheetData);
+            
+            // Ajuste automático de largura (simples)
+            const wscols = Object.keys(sheetData[0] || {}).map(() => ({ wch: 22 }));
+            ws['!cols'] = wscols;
+
+            XLSX.utils.book_append_sheet(wb, ws, "Relatório");
+            XLSX.writeFile(wb, fileName);
+        }
+
+        function printCurrentReport() {
+            const printWindow = window.open('', '_blank');
+            const title = selectedReportTitle.innerText;
+            const content = reportDisplayArea.innerHTML;
+            
+            printWindow.document.write(`
+                <html><head><title>BPRv - Relatório</title>
+                <style>
+                    body { font-family: sans-serif; padding: 20px; font-size: 10pt; }
+                    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+                    th, td { border: 1px solid #ccc; padding: 5px; text-align: left; }
+                    th { background: #f0f0f0; }
+                    .header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px; }
+                    .footer { position: fixed; bottom: 0; width: 100%; text-align: center; font-size: 8pt; color: #555; }
+                    @media print { .no-print { display: none; } }
+                </style></head><body>
+                <div class="header">
+                    <h3>POLÍCIA MILITAR DO ESTADO DE SERGIPE</h3>
+                    <h4>BATALHÃO DE POLÍCIA RODOVIÁRIA ESTADUAL - BPRv</h4>
+                    <p>${title}</p>
+                </div>
+                ${content}
+                <div class="footer">Gerado em ${new Date().toLocaleString()} - Sistema de Inventário BPRv</div>
+                <script>setTimeout(() => { window.print(); window.close(); }, 500);<\/script>
+                </body></html>
+            `);
+            printWindow.document.close();
+        }
+
+        function printFilteredList() {
+            if (filteredInventory.length === 0) {
+                alert("Não há ativos filtrados para imprimir.");
+                return;
+            }
+            currentReportData = { type: 'general-list-complete', data: filteredInventory };
+            generateAndShowReport('general-list-complete');
+            printCurrentReport();
+        }
+
+        // --- Modais de Configuração (Locais, Itens, etc) ---
+        // LOCAIS
+        function openLocationModal() { locationModal.classList.remove('hidden'); renderLocationList(); }
+        function closeLocationModal() { locationModal.classList.add('hidden'); resetLocationForm(); }
+        function renderLocationList() {
+            locationList.innerHTML = '';
+            locations.sort((a,b) => a.name.localeCompare(b.name)).forEach(l => {
+                const li = document.createElement('li');
+                li.className = 'flex justify-between items-center p-2 bg-gray-50 rounded border';
+                li.innerHTML = `<span>${l.name}</span><div>
+                    <button onclick="editLocation('${l.id}')" class="text-blue-600 mr-2 text-sm">Editar</button>
+                    <button onclick="deleteLocation('${l.id}')" class="text-red-600 text-sm">Excluir</button>
+                </div>`;
+                locationList.appendChild(li);
+            });
+        }
+        function handleLocationSubmit(e) {
+            e.preventDefault();
+            const id = locationIdInput.value;
+            const name = locationNameInput.value.trim();
+            if (id) {
+                const idx = locations.findIndex(l => l.id === id);
+                locations[idx].name = name;
+            } else {
+                locations.push({ id: Date.now().toString(), name });
+            }
+            saveData(); renderLocationList(); renderSelects(); renderFilterSelects(); resetLocationForm();
+        }
+        function editLocation(id) {
+            const l = locations.find(loc => loc.id === id);
+            locationIdInput.value = l.id; locationNameInput.value = l.name;
+            locationSubmitBtn.innerText = 'Atualizar'; locationCancelBtn.classList.remove('hidden');
+        }
+        function resetLocationForm() {
+            locationForm.reset(); locationIdInput.value = '';
+            locationSubmitBtn.innerText = 'Salvar Local'; locationCancelBtn.classList.add('hidden');
+        }
+        function deleteLocation(id) {
+            if (confirm("Deseja excluir este local?")) {
+                locations = locations.filter(l => l.id !== id);
+                saveData(); renderLocationList(); renderSelects(); renderFilterSelects();
+            }
+        }
+
+        // ITENS
+        function openItemModal() { itemModal.classList.remove('hidden'); renderItemList(); }
+        function closeItemModal() { itemModal.classList.add('hidden'); resetItemForm(); }
+        function renderItemList() {
+            itemList.innerHTML = '';
+            items.sort((a,b) => a.name.localeCompare(b.name)).forEach(i => {
+                const li = document.createElement('li');
+                li.className = 'flex justify-between items-center p-2 bg-purple-50 rounded border';
+                li.innerHTML = `<span>${i.name}</span><div>
+                    <button onclick="editItemEntity('${i.id}')" class="text-blue-600 mr-2 text-sm">Editar</button>
+                    <button onclick="deleteItemEntity('${i.id}')" class="text-red-600 text-sm">Excluir</button>
+                </div>`;
+                itemList.appendChild(li);
+            });
+        }
+        function handleItemSubmit(e) {
+            e.preventDefault();
+            const id = itemEntityIdInput.value;
+            const name = itemEntityNameInput.value.trim();
+            if (id) {
+                const idx = items.findIndex(i => i.id === id);
+                items[idx].name = name;
+            } else {
+                items.push({ id: Date.now().toString(), name });
+            }
+            saveData(); renderItemList(); renderSelects(); renderFilterSelects(); resetItemForm();
+        }
+        function editItemEntity(id) {
+            const i = items.find(it => it.id === id);
+            itemEntityIdInput.value = i.id; itemEntityNameInput.value = i.name;
+            itemSubmitBtn.innerText = 'Atualizar'; itemCancelBtn.classList.remove('hidden');
+        }
+        function resetItemForm() {
+            itemForm.reset(); itemEntityIdInput.value = '';
+            itemSubmitBtn.innerText = 'Salvar Item'; itemCancelBtn.classList.add('hidden');
+        }
+        function deleteItemEntity(id) {
+            if (confirm("Deseja excluir este item?")) {
+                items = items.filter(i => i.id !== id);
+                saveData(); renderItemList(); renderSelects(); renderFilterSelects();
+            }
+        }
+
+        // SUBITENS
+        function openSubitemModal() { subitemModal.classList.remove('hidden'); renderSubitemList(); }
+        function closeSubitemModal() { subitemModal.classList.add('hidden'); resetSubitemForm(); }
+        function renderSubitemList() {
+            subitemList.innerHTML = '';
+            subitems.sort((a,b) => a.name.localeCompare(b.name)).forEach(si => {
+                const li = document.createElement('li');
+                li.className = 'flex justify-between items-center p-2 bg-pink-50 rounded border';
+                li.innerHTML = `<span>${si.name}</span><div>
+                    <button onclick="editSubitemEntity('${si.id}')" class="text-blue-600 mr-2 text-sm">Editar</button>
+                    <button onclick="deleteSubitemEntity('${si.id}')" class="text-red-600 text-sm">Excluir</button>
+                </div>`;
+                subitemList.appendChild(li);
+            });
+        }
+        function handleSubitemSubmit(e) {
+            e.preventDefault();
+            const id = subitemEntityIdInput.value;
+            const name = subitemEntityNameInput.value.trim();
+            if (id) {
+                const idx = subitems.findIndex(si => si.id === id);
+                subitems[idx].name = name;
+            } else {
+                subitems.push({ id: Date.now().toString(), name });
+            }
+            saveData(); renderSubitemList(); renderSelects(); renderFilterSelects(); resetSubitemForm();
+        }
+        function editSubitemEntity(id) {
+            const si = subitems.find(s => s.id === id);
+            subitemEntityIdInput.value = si.id; subitemEntityNameInput.value = si.name;
+            subitemSubmitBtn.innerText = 'Atualizar'; subitemCancelBtn.classList.remove('hidden');
+        }
+        function resetSubitemForm() {
+            subitemForm.reset(); subitemEntityIdInput.value = '';
+            subitemSubmitBtn.innerText = 'Salvar Subitem'; subitemCancelBtn.classList.add('hidden');
+        }
+        function deleteSubitemEntity(id) {
+            if (confirm("Deseja excluir este subitem?")) {
+                subitems = subitems.filter(si => si.id !== id);
+                saveData(); renderSubitemList(); renderSelects(); renderFilterSelects();
+            }
+        }
+
+        // ORIGENS
+        function openOriginModal() { originModal.classList.remove('hidden'); renderOriginList(); }
+        function closeOriginModal() { originModal.classList.add('hidden'); resetOriginForm(); }
+        function renderOriginList() {
+            originList.innerHTML = '';
+            origins.sort((a,b) => a.name.localeCompare(b.name)).forEach(o => {
+                const li = document.createElement('li');
+                li.className = 'flex justify-between items-center p-2 bg-yellow-50 rounded border';
+                li.innerHTML = `<span>${o.name}</span><div>
+                    <button onclick="editOriginEntity('${o.id}')" class="text-blue-600 mr-2 text-sm">Editar</button>
+                    <button onclick="deleteOriginEntity('${o.id}')" class="text-red-600 text-sm">Excluir</button>
+                </div>`;
+                originList.appendChild(li);
+            });
+        }
+        function handleOriginSubmit(e) {
+            e.preventDefault();
+            const id = originEntityIdInput.value;
+            const name = originEntityNameInput.value.trim();
+            if (id) {
+                const idx = origins.findIndex(o => o.id === id);
+                origins[idx].name = name;
+            } else {
+                origins.push({ id: Date.now().toString(), name });
+            }
+            saveData(); renderOriginList(); renderSelects(); renderFilterSelects(); resetOriginForm();
+        }
+        function editOriginEntity(id) {
+            const o = origins.find(or => or.id === id);
+            originEntityIdInput.value = o.id; originEntityNameInput.value = o.name;
+            originSubmitBtn.innerText = 'Atualizar'; originCancelBtn.classList.remove('hidden');
+        }
+        function resetOriginForm() {
+            originForm.reset(); originEntityIdInput.value = '';
+            originSubmitBtn.innerText = 'Salvar Origem'; originCancelBtn.classList.add('hidden');
+        }
+        function deleteOriginEntity(id) {
+            if (confirm("Deseja excluir esta origem?")) {
+                origins = origins.filter(o => o.id !== id);
+                saveData(); renderOriginList(); renderSelects(); renderFilterSelects();
+            }
+        }
+
+        // --- Backup e Restauração ---
+        function backupData() {
+            const fullData = { inventory, locations, items, subitems, origins };
+            const blob = new Blob([JSON.stringify(fullData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Backup_BPRv_Inventario_${new Date().toLocaleDateString().replace(/\//g, '-')}.json`;
+            a.click();
+            showMessage('Backup concluído!', 'success', dataMessageBox);
+        }
+
+        function restoreData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (confirm("A restauração substituirá todos os dados atuais. Continuar?")) {
+                        inventory = data.inventory || [];
+                        locations = data.locations || [];
+                        items = data.items || [];
+                        subitems = data.subitems || [];
+                        origins = data.origins || [];
+                        saveData();
+                        init();
+                        showMessage('Dados restaurados com sucesso!', 'success', dataMessageBox);
+                    }
+                } catch (err) {
+                    alert("Erro ao ler o arquivo JSON.");
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // --- Inicialização ---
+        function init() {
+            loadAllData();
+            renderSelects();
+            renderFilterSelects();
+            renderInventory(inventory);
+            form.addEventListener('submit', handleFormSubmit);
+            confirmDeleteBtn.addEventListener('click', deleteItemConfirmed);
+            cancelDeleteBtn.addEventListener('click', closeDeleteModal);
+            resetForm();
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
