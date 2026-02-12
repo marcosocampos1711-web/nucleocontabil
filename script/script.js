@@ -33,21 +33,31 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-/*window.addEventListener('scroll', function() {
-    const nav = document.querySelector('.navbar');
-    // Se rolou mais de 50px, adiciona a classe que muda a cor do botão
-    if (window.scrollY > 50) {
-        nav.classList.add('navbar-scrolled');
-    } else {
-        nav.classList.remove('navbar-scrolled');
-    }
-});*/
-
 window.addEventListener('scroll', function() {
     const nav = document.getElementById('main-nav'); // Seleciona sua navbar
     if (window.scrollY > 50) {
         nav.classList.add('navbar-scrolled', 'bg-light', 'shadow'); // Adiciona fundo claro e sombra
     } else {
         nav.classList.remove('navbar-scrolled', 'bg-light', 'shadow');
+    }
+});
+
+document.addEventListener("DOMContentLoaded", function() {
+    // Verifica se o usuário já visitou nesta sessão
+    if (!sessionStorage.getItem("visitado")) {
+        const container = document.getElementById("contador-container");
+        const imgContador = document.createElement("img");
+        
+        // Insere a URL do seu contador - https://www.contador-gratis.com
+        imgContador.src = "https://contador-gratis.com/contadores-de-visitas/110226100307805.gif";
+        imgContador.style.width = "40px";
+        
+        container.appendChild(imgContador);
+        
+        // Marca que o contador já foi carregado para este usuário
+        sessionStorage.setItem("visitado", "true");
+    } else {
+        // Opcional: Mostrar uma mensagem ou imagem estática se já visitou
+        document.getElementById("contador-container").innerText = "";
     }
 });
