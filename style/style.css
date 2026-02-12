@@ -410,3 +410,19 @@ footer { background: #111; color: white; padding: 40px 0; }
 .navbar-toggler:not(.collapsed) .hamburger-icon span {
     background-color: #ff4d4d; /* Opcional: destaque para o X em vermelho */
 }
+
+/* 1. Cor padrão (Início: Fundo transparente/escuro, Ícone Branco) */
+.hamburger-icon span {
+    background-color: #ffffff; /* Branco para destacar no fundo escuro da Hero */
+}
+
+/* 2. Cor ao Rolar (Fundo claro, Ícone Azul Núcleo) */
+/* A classe .navbar-scrolled deve ser adicionada via JS ao rolar a página */
+.navbar-scrolled .hamburger-icon span {
+    background-color: #003057; /* Azul marinho para contraste no fundo claro */
+}
+
+/* 3. Cor do 'X' (Destaque quando aberto) */
+.navbar-toggler:not(.collapsed) .hamburger-icon span {
+    background-color: #ff4d4d !important; /* Vermelho suave para indicar fechamento, combinando com o botão de proposta */
+}
