@@ -32,3 +32,13 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+window.addEventListener('scroll', function() {
+    const nav = document.querySelector('.navbar');
+    // Se rolou mais de 50px, adiciona a classe que muda a cor do botão
+    if (window.scrollY > 50) {
+        nav.classList.add('navbar-scrolled');
+    } else {
+        nav.classList.remove('navbar-scrolled');
+    }
+});
