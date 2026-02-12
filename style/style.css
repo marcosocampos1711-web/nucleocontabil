@@ -57,9 +57,9 @@ body {
     justify-content: center;
     text-align: center;
     color: white;
-    /* IMAGEM DE FUNDO MODERNA INCORPORADA*/
+    /* IMAGEM DE FUNDO MODERNA INCORPORADA
+    /*background-image: linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)), url('../images/aracaju.jpg');*/
     background-image: linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)), url('../images/aracaju.jpg');
-    /*background-image: url('../images/aracaju.jpg');*/
     background-attachment: fixed; /* Efeito Parallax */
     background-position: center;
     background-repeat: no-repeat;
@@ -308,4 +308,70 @@ footer { background: #111; color: white; padding: 40px 0; }
     transform: scale(1.1);
 }
 
+/* Estilização do ícone sanduíche moderno */
+.navbar-toggler {
+    border: none !important;
+    padding: 10px;
+}
 
+.navbar-toggler:focus {
+    box-shadow: none;
+}
+
+.hamburger-icon {
+    width: 30px;
+    height: 20px;
+    position: relative;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.hamburger-icon span {
+    display: block;
+    height: 3px;
+    width: 100%;
+    background-color: #fff; /* Cor das linhas */
+    border-radius: 3px;
+    transition: all 0.3s ease-in-out;
+}
+
+/* Transformação para o X */
+.navbar-toggler:not(.collapsed) .hamburger-icon span:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+}
+
+.navbar-toggler:not(.collapsed) .hamburger-icon span:nth-child(2) {
+    opacity: 0;
+    transform: translateX(-20px);
+}
+
+.navbar-toggler:not(.collapsed) .hamburger-icon span:nth-child(3) {
+    transform: translateY(-9px) rotate(-45deg);
+}
+
+/* Ajuste para empurrar o conteúdo suavemente */
+.navbar-collapse {
+    transition: all 0.35s ease-in-out;
+}
+
+/* Cor de fundo quando o menu está expandido (mobile) */
+@media (max-width: 991.98px) {
+    .navbar-collapse {
+        background-color: rgba(0, 48, 87, 0.95); /* Azul escuro com leve transparência */
+        padding: 1rem;
+        border-radius: 10px;
+        margin-top: 10px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+    
+    .nav-link {
+        padding: 10px 15px !important;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .nav-item:last-child .nav-link {
+        border-bottom: none;
+    }
+}
