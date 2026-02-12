@@ -7,3 +7,28 @@ window.addEventListener("scroll", function() {
 		nav.classList.remove("sticky");
 	}
 });
+
+document.querySelectorAll('.nav-link').forEach(link => {
+    link.addEventListener('click', () => {
+        const navbarCollapse = document.querySelector('.navbar-collapse');
+        if (navbarCollapse.classList.contains('show')) {
+            const bsCollapse = new bootstrap.Collapse(navbarCollapse);
+            bsCollapse.hide();
+        }
+    });
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    const navbarToggler = document.querySelector('.navbar-toggler');
+    const navbarCollapse = document.querySelector('#navbarNav');
+    const navLinks = document.querySelectorAll('.nav-link');
+
+    // Fecha o menu ao clicar em um link (para mobile)
+    navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            if (navbarCollapse.classList.contains('show')) {
+                new bootstrap.Collapse(navbarCollapse).hide();
+            }
+        });
+    });
+});
