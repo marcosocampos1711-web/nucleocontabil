@@ -387,3 +387,26 @@ footer { background: #111; color: white; padding: 40px 0; }
         border-bottom: none;
     }
 }
+
+
+/* Estilo base das linhas do sanduíche */
+.hamburger-icon span {
+    display: block;
+    height: 3px;
+    width: 100%;
+    /* Cor que se adapta: se o fundo for escuro, ela brilha; se claro, escurece */
+    background-color: #ffffff; 
+    border-radius: 3px;
+    transition: all 0.3s ease-in-out;
+}
+
+/* Quando a navbar ganha uma cor de fundo (ex: ao rolar a página) */
+/* Se a sua classe de scroll no JS adicionar '.navbar-scrolled', use: */
+.navbar-scrolled .hamburger-icon span {
+    background-color: #003057; /* Cor oposta (azul escuro do seu tema) */
+}
+
+/* Garantir que o X também mude de cor se necessário */
+.navbar-toggler:not(.collapsed) .hamburger-icon span {
+    background-color: #ff4d4d; /* Opcional: destaque para o X em vermelho */
+}
