@@ -165,8 +165,10 @@ section { padding: 140px 0; }
 }
 
 /* Divisor Parallax Secundário */
+/* Localize e substitua a classe .parallax-divider por esta: */
 .parallax-divider {
-    height: 600px;
+    min-height: 600px; /* Alterado de height para min-height */
+    padding: 60px 0;   /* Adicionado padding para respiro no mobile */
     background-image: linear-gradient(rgba(0, 74, 140, 0.8), rgba(0, 74, 140, 0.8)), 
                       url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1920&auto=format&fit=crop');
     background-attachment: fixed;
@@ -177,6 +179,15 @@ section { padding: 140px 0; }
     justify-content: center;
     color: white;
     text-align: center;
+}
+
+/* Ajuste específico para os botões das lojas no mobile */
+.parallax-divider .btn img {
+    transition: transform 0.3s ease;
+}
+
+.parallax-divider .btn:hover img {
+    transform: scale(1.05);
 }
 
 /* Contato e Mapa */
@@ -307,6 +318,7 @@ footer { background: #111; color: white; padding: 40px 0; }
     /* Scales the image inside the card */
     transform: scale(1.1);
 }
+
 
 /* Estilização do ícone sanduíche moderno */
 .navbar-toggler {
